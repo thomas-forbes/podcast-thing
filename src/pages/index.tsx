@@ -11,6 +11,24 @@ export default function Home() {
     showNotes:
       "Chris Frantz is your agony aunt for your multiple projects. You've probably got multiple projects and it's just not working out. Chris is here to cut through your excuses and explain why you need to focus on a single thing to turn it into an actual business (and not just a hobby).",
     imgUrl: '/indiebites.png',
+    comments: [
+      {
+        id: '1',
+        text: 'This is a comment',
+        user: {
+          id: '1',
+          name: 'Chris',
+        },
+      },
+      {
+        id: '2',
+        text: 'This is another comment',
+        user: {
+          id: '2',
+          name: 'Chris',
+        },
+      },
+    ],
   }
 
   return (
@@ -43,6 +61,23 @@ export default function Home() {
             <button className="w-full rounded-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition hover:bg-zinc-400 active:bg-zinc-500 active:text-zinc-100/80 active:transition-none dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70">
               Comment
             </button>
+          </div>
+          {/* COMMENTS */}
+          {/* TODO: Watch reddit clone tutorial */}
+          <div className="flex w-full flex-col space-y-4">
+            {podcast.comments.map((comment) => (
+              <div className="flex w-full flex-col space-y-1">
+                <div className="flex items-center space-x-2">
+                  {/* <div className="h-8 w-8 rounded-full bg-white" /> */}
+                  <p className="text-sm font-semibold dark:text-white">
+                    {comment.user.name}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm dark:text-zinc-400">{comment.text}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
