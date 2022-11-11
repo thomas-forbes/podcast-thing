@@ -1,7 +1,12 @@
+import { useState } from 'react'
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai'
 import { FaHeart, FaMicrophone, FaRegHeart, FaStopCircle } from 'react-icons/fa'
 import TextareaAutosize from 'react-textarea-autosize'
 
+interface Comment {
+  label: string
+  rating: number
+}
 export default function Home() {
   // const hello = trpc.example.hello.useQuery({ text: 'from tRPC' })
 
@@ -42,6 +47,12 @@ export default function Home() {
     ],
   }
 
+  const [ratings, setRatings] = useState<Comment[]>([
+    { label: 'Overall', rating: -1 },
+    { label: 'Content', rating: -1 },
+    { label: 'Production', rating: -1 },
+  ])
+
   return (
     <>
       {/* BG */}
@@ -67,19 +78,20 @@ export default function Home() {
             {/* HEADING */}
             <h2 className="text-xl font-bold dark:text-white">Ratings</h2>
             {/* RATINGS */}
-            {['Overall', 'Content', 'Production'].map((label) => (
-              <div className="flex w-11/12 flex-row items-center justify-between">
-                {/* LABEL */}
-                <p className="flex-1 dark:text-white">{label}:</p>
-                {/* STARS */}
-                <div className="flex flex-1 flex-row items-center justify-center">
-                  {[1, 2, 3, 4, 5].map((rating) => (
-                    <button className="appearance-none p-1 text-3xl text-yellow-500">
-                      {rating <= 3 ? <AiFillStar /> : <AiOutlineStar />}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            {ratings.map(({ label, rating }) => (
+              <Rating
+                key={label}
+                label={label}
+                rating={rating}
+                setRating={(r) =>
+                  setRatings((ratings: Comment[]) => {
+                    let nRatings = [...ratings]
+                    const index = ratings.findIndex((r) => r.label === label)
+                    nRatings[index]!.rating = r
+                    return nRatings
+                  })
+                }
+              />
             ))}
           </div>
           {/* TODO: add ability to answer host questions */}
@@ -89,6 +101,7 @@ export default function Home() {
             <h2 className="text-xl font-bold dark:text-white">Comments</h2>
             {/* BOX */}
             <div>
+              {/* MIC CODE https://medium.com/front-end-weekly/recording-audio-in-mp3-using-reactjs-under-5-minutes-5e960defaf10 */}
               <div
                 className={`flex w-full flex-row items-center justify-center space-x-1 rounded-t-md py-2 px-3 text-zinc-100 outline-offset-2 transition active:text-zinc-100/80 active:transition-none dark:active:text-zinc-100/70 ${
                   true
@@ -114,13 +127,16 @@ export default function Home() {
             {/* COMMENTS */}
             <div className="flex w-full flex-col space-y-4">
               {podcast.comments.map((comment) => (
-                <div className="flex w-full flex-col space-y-4">
+                <div
+                  key={'comment:' + comment.id}
+                  className="flex w-full flex-col space-y-4"
+                >
                   {/* OG COMMENT */}
                   <Comment comment={comment} />
                   {/* REPLIES */}
                   <div className="ml-4 flex flex-col">
                     {comment?.replies?.map((reply) => (
-                      <Comment comment={reply} />
+                      <Comment key={'reply:' + reply.id} comment={reply} />
                     ))}
                   </div>
                 </div>
@@ -130,6 +146,35 @@ export default function Home() {
         </div>
       </div>
     </>
+  )
+}
+
+const Rating = ({
+  label,
+  rating,
+  setRating,
+}: {
+  label: string
+  rating: number
+  setRating: (rating: number) => void
+}) => {
+  return (
+    <div className="flex w-11/12 flex-row items-center justify-between">
+      {/* LABEL */}
+      <p className="flex-1 dark:text-white">{label}:</p>
+      {/* STARS */}
+      <div className="flex flex-1 flex-row items-center justify-center">
+        {[...Array(5)].map((_, i) => (
+          <button
+            className="appearance-none p-1 text-3xl text-yellow-500 duration-75"
+            key={label + i}
+            onClick={() => setRating(i == rating ? -1 : i)}
+          >
+            {i <= rating ? <AiFillStar /> : <AiOutlineStar />}
+          </button>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -151,11 +196,7 @@ const Comment = ({
     {/* BOTTOM ACTIONS */}
     <div className="flex flex-row items-center space-x-2 text-zinc-500/80 dark:text-zinc-400">
       <button className="appearance-none py-1 text-sm">
-        {Math.random() > 0.5 ? (
-          <FaRegHeart />
-        ) : (
-          <FaHeart className="text-red-500" />
-        )}
+        {true ? <FaRegHeart /> : <FaHeart className="text-red-500" />}
       </button>
       <button className="appearance-none text-xs font-bold">Reply</button>
       <button className="appearance-none text-xs font-bold">Report</button>
