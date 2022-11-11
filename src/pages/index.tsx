@@ -1,5 +1,5 @@
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai'
-import { FaHeart, FaRegHeart } from 'react-icons/fa'
+import { FaHeart, FaMicrophone, FaRegHeart, FaStopCircle } from 'react-icons/fa'
 import TextareaAutosize from 'react-textarea-autosize'
 
 export default function Home() {
@@ -89,9 +89,21 @@ export default function Home() {
             <h2 className="text-xl font-bold dark:text-white">Comments</h2>
             {/* BOX */}
             <div>
+              <div
+                className={`flex w-full flex-row items-center justify-center space-x-1 rounded-t-md py-2 px-3 text-zinc-100 outline-offset-2 transition active:text-zinc-100/80 active:transition-none dark:active:text-zinc-100/70 ${
+                  true
+                    ? 'bg-green-600 hover:bg-green-500 active:bg-green-600 dark:bg-green-700 dark:hover:bg-green-600 dark:active:bg-green-700'
+                    : 'bg-red-500 hover:bg-red-400 active:bg-red-500 dark:bg-red-700 dark:hover:bg-red-600 dark:active:bg-red-700'
+                }`}
+              >
+                <div className="text-lg">
+                  {true ? <FaMicrophone /> : <FaStopCircle />}
+                </div>
+                <p className="text-sm font-semibold">Record</p>
+              </div>
               <TextareaAutosize
                 // className="text-md w-full resize-none appearance-none rounded-t-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors placeholder:text-zinc-400 focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-sky-400 dark:focus:ring-sky-400/10"
-                className="text-md w-full resize-none appearance-none rounded-t-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors placeholder:text-zinc-400 focus:outline-none   dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500"
+                className="w-full resize-none appearance-none border-x border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors placeholder:text-zinc-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500"
                 placeholder="Comment..."
                 minRows={3}
               />
@@ -104,63 +116,11 @@ export default function Home() {
               {podcast.comments.map((comment) => (
                 <div className="flex w-full flex-col space-y-4">
                   {/* OG COMMENT */}
-                  <div className="flex w-full flex-col space-y-1">
-                    {/* NAME */}
-                    <div className="flex items-center space-x-2">
-                      {/* <div className="h-8 w-8 rounded-full bg-white" /> */}
-                      <p className="text-sm font-bold dark:text-white">
-                        {comment.user.name}
-                      </p>
-                    </div>
-                    {/* TEXT */}
-                    <div>
-                      <p className="text-sm dark:text-zinc-200">
-                        {comment.text}
-                      </p>
-                    </div>
-                    {/* BOTTOM ACTIONS */}
-                    <div className="flex flex-row items-center space-x-2 dark:text-zinc-400">
-                      <button className="appearance-none py-1 text-sm">
-                        {true ? <FaRegHeart /> : <FaHeart />}
-                      </button>
-                      <button className="appearance-none text-xs font-bold">
-                        Reply
-                      </button>
-                      <button className="appearance-none text-xs font-bold">
-                        Report
-                      </button>
-                    </div>
-                  </div>
+                  <Comment comment={comment} />
                   {/* REPLIES */}
                   <div className="ml-4 flex flex-col">
                     {comment?.replies?.map((reply) => (
-                      <div className="flex w-full flex-col space-y-1">
-                        {/* NAME */}
-                        <div className="flex items-center space-x-2">
-                          {/* <div className="h-8 w-8 rounded-full bg-white" /> */}
-                          <p className="text-sm font-bold dark:text-white">
-                            {reply.user.name}
-                          </p>
-                        </div>
-                        {/* TEXT */}
-                        <div>
-                          <p className="text-sm dark:text-zinc-200">
-                            {reply.text}
-                          </p>
-                        </div>
-                        {/* BOTTOM ACTIONS */}
-                        <div className="flex flex-row items-center space-x-2 dark:text-zinc-400">
-                          <button className="appearance-none py-1 text-sm">
-                            {true ? <FaRegHeart /> : <FaHeart />}
-                          </button>
-                          <button className="appearance-none text-xs font-bold">
-                            Reply
-                          </button>
-                          <button className="appearance-none text-xs font-bold">
-                            Report
-                          </button>
-                        </div>
-                      </div>
+                      <Comment comment={reply} />
                     ))}
                   </div>
                 </div>
@@ -172,3 +132,33 @@ export default function Home() {
     </>
   )
 }
+
+const Comment = ({
+  comment,
+}: {
+  comment: { user: { name: string; id: string }; text: string }
+}) => (
+  <div className="flex w-full flex-col space-y-1">
+    <div className="flex flex-row space-x-2">
+      {/* NAME */}
+      <div className="h-5 w-5 rounded-full bg-white" />
+      <div className="flex flex-col space-y-1">
+        <p className="text-sm font-bold dark:text-white">{comment.user.name}</p>
+        {/* TEXT */}
+        <p className="text-sm dark:text-zinc-200">{comment.text}</p>
+      </div>
+    </div>
+    {/* BOTTOM ACTIONS */}
+    <div className="flex flex-row items-center space-x-2 text-zinc-500/80 dark:text-zinc-400">
+      <button className="appearance-none py-1 text-sm">
+        {Math.random() > 0.5 ? (
+          <FaRegHeart />
+        ) : (
+          <FaHeart className="text-red-500" />
+        )}
+      </button>
+      <button className="appearance-none text-xs font-bold">Reply</button>
+      <button className="appearance-none text-xs font-bold">Report</button>
+    </div>
+  </div>
+)
