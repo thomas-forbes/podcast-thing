@@ -1,12 +1,15 @@
+import useMediaRecorder from '@wmik/use-media-recorder'
 import { useState } from 'react'
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai'
 import { FaHeart, FaMicrophone, FaRegHeart, FaStopCircle } from 'react-icons/fa'
+// import { useReactMediaRecorder } from 'react-media-recorder'
 import TextareaAutosize from 'react-textarea-autosize'
 
 interface Comment {
   label: string
   rating: number
 }
+
 export default function Home() {
   // const hello = trpc.example.hello.useQuery({ text: 'from tRPC' })
 
@@ -52,6 +55,19 @@ export default function Home() {
     { label: 'Content', rating: -1 },
     { label: 'Production', rating: -1 },
   ])
+  const {
+    error,
+    status,
+    mediaBlob,
+    stopRecording,
+    getMediaStream,
+    startRecording,
+  } = useMediaRecorder({
+    blobOptions: { type: 'audio/webm' },
+    mediaStreamConstraints: { audio: true, video: false },
+  })
+
+  const isRecording = () => status === 'recording'
 
   return (
     <>
@@ -85,7 +101,7 @@ export default function Home() {
                 rating={rating}
                 setRating={(r) =>
                   setRatings((ratings: Comment[]) => {
-                    let nRatings = [...ratings]
+                    const nRatings = [...ratings]
                     const index = ratings.findIndex((r) => r.label === label)
                     nRatings[index]!.rating = r
                     return nRatings
@@ -100,22 +116,42 @@ export default function Home() {
             {/* HEADING */}
             <h2 className="text-xl font-bold dark:text-white">Comments</h2>
             {/* BOX */}
+            {mediaBlob && (
+              <audio src={URL.createObjectURL(mediaBlob)} controls />
+            )}
+            {/* <button
+              onClick={async () => {
+                const a = document.createElement('a')
+                document.body.appendChild(a)
+                // a.style = 'display: none'
+                console.log(mediaBlob)
+                a.href = URL.createObjectURL(mediaBlob)
+                a.download = 'test.webm'
+                a.click()
+              }}
+            >
+              ooo
+            </button> */}
             <div>
-              {/* MIC CODE https://medium.com/front-end-weekly/recording-audio-in-mp3-using-reactjs-under-5-minutes-5e960defaf10 */}
-              <div
-                className={`flex w-full flex-row items-center justify-center space-x-1 rounded-t-md py-2 px-3 text-zinc-100 outline-offset-2 transition active:text-zinc-100/80 active:transition-none dark:active:text-zinc-100/70 ${
-                  true
-                    ? 'bg-green-600 hover:bg-green-500 active:bg-green-600 dark:bg-green-700 dark:hover:bg-green-600 dark:active:bg-green-700'
-                    : 'bg-red-500 hover:bg-red-400 active:bg-red-500 dark:bg-red-700 dark:hover:bg-red-600 dark:active:bg-red-700'
+              <button
+                onClick={() =>
+                  isRecording() ? stopRecording() : startRecording()
+                }
+                className={`flex w-full appearance-none flex-row items-center justify-center space-x-1 rounded-t-md py-2 px-3 text-zinc-100 outline-offset-2 transition duration-200 active:text-zinc-100/80 active:transition-none dark:active:text-zinc-100/70 ${
+                  isRecording()
+                    ? 'bg-red-500 hover:bg-red-400 active:bg-red-500 dark:bg-red-700 dark:hover:bg-red-600 dark:active:bg-red-700'
+                    : 'bg-green-600 hover:bg-green-500 active:bg-green-600 dark:bg-green-700 dark:hover:bg-green-600 dark:active:bg-green-700'
                 }`}
               >
                 <div className="text-lg">
-                  {true ? <FaMicrophone /> : <FaStopCircle />}
+                  {!isRecording() ? <FaMicrophone /> : <FaStopCircle />}
                 </div>
-                <p className="text-sm font-semibold">Record</p>
-              </div>
+                <p className="text-sm font-semibold">
+                  {isRecording() ? 'Stop' : 'Record'}
+                </p>
+              </button>
+              {/* TEXT BOX */}
               <TextareaAutosize
-                // className="text-md w-full resize-none appearance-none rounded-t-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors placeholder:text-zinc-400 focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-sky-400 dark:focus:ring-sky-400/10"
                 className="w-full resize-none appearance-none border-x border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors placeholder:text-zinc-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500"
                 placeholder="Comment..."
                 minRows={3}
@@ -157,26 +193,25 @@ const Rating = ({
   label: string
   rating: number
   setRating: (rating: number) => void
-}) => {
-  return (
-    <div className="flex w-11/12 flex-row items-center justify-between">
-      {/* LABEL */}
-      <p className="flex-1 dark:text-white">{label}:</p>
-      {/* STARS */}
-      <div className="flex flex-1 flex-row items-center justify-center">
-        {[...Array(5)].map((_, i) => (
-          <button
-            className="appearance-none p-1 text-3xl text-yellow-500 duration-75"
-            key={label + i}
-            onClick={() => setRating(i == rating ? -1 : i)}
-          >
-            {i <= rating ? <AiFillStar /> : <AiOutlineStar />}
-          </button>
-        ))}
-      </div>
+}) => (
+  <div className="flex w-11/12 flex-row items-center justify-between">
+    {/* MAYBE https://mui.com/material-ui/react-rating/#main-content */}
+    {/* LABEL */}
+    <p className="flex-1 dark:text-white">{label}:</p>
+    {/* STARS */}
+    <div className="flex flex-1 flex-row items-center justify-center">
+      {[...Array(5)].map((_, i) => (
+        <button
+          className="appearance-none p-1 text-3xl text-yellow-500 duration-75"
+          key={label + i}
+          onClick={() => setRating(i == rating ? -1 : i)}
+        >
+          {i <= rating ? <AiFillStar /> : <AiOutlineStar />}
+        </button>
+      ))}
     </div>
-  )
-}
+  </div>
+)
 
 const Comment = ({
   comment,

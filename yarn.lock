@@ -360,6 +360,11 @@
     "@typescript-eslint/types" "5.41.0"
     eslint-visitor-keys "^3.3.0"
 
+"@wmik/use-media-recorder@^1.6.5-beta.0":
+  version "1.6.5-beta.0"
+  resolved "https://registry.yarnpkg.com/@wmik/use-media-recorder/-/use-media-recorder-1.6.5-beta.0.tgz#451e2e054b97e59b4535889773df26a9d5bfeee2"
+  integrity sha512-AEoKUt3Ct/1nwrKe1gGB7LY30oNIa/00deM/gZPxlS5XgrAtvRH71UwWjrlqevotkx68o0Q2BQqBChEc6SE5Xw==
+
 acorn-jsx@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"
@@ -2269,6 +2274,11 @@ v8-compile-cache@^2.0.3:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.3.0.tgz#2de19618c66dc247dcfb6f99338035d8245a2cee"
   integrity sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==
+
+vmsg@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/vmsg/-/vmsg-0.4.0.tgz#b61684226274afcf441b5348cc596c80fc50bf9f"
+  integrity sha512-46BBqRSfqdFGUpO2j+Hpz8T9YE5uWG0/PWal1PT+R1o8NEthtjG/XWl4HzbB8hIHpg/UtmKvsxL2OKQBrIYcHQ==
 
 which-boxed-primitive@^1.0.2:
   version "1.0.2"
