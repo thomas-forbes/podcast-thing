@@ -26,12 +26,14 @@
     "react-icons": "^4.6.0",
     "react-textarea-autosize": "^8.3.4",
     "superjson": "1.9.1",
+    "wavesurfer.js": "^6.4.0",
     "zod": "^3.18.0"
   },
   "devDependencies": {
     "@types/node": "18.0.0",
     "@types/react": "18.0.14",
     "@types/react-dom": "18.0.5",
+    "@types/wavesurfer.js": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "autoprefixer": "^10.4.7",
