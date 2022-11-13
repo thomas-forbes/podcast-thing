@@ -230,10 +230,7 @@ const VoiceWave = ({ src, trash }: { src: string; trash: () => void }) => {
   }, [])
 
   useEffect(() => {
-    if (wavesurfer && src) {
-      // wavesurfer.empty()
-      wavesurfer.load(src)
-    }
+    if (wavesurfer && src) wavesurfer.load(src)
   }, [wavesurfer, src])
 
   return (
