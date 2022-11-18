@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error the lib is not typed
 import MicRecorder from 'mic-recorder-to-mp3'
 import { useEffect, useRef, useState } from 'react'
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai'
@@ -143,9 +143,7 @@ const CommentBox = () => {
 
   const startRecording = async () => {
     setIsRecording(true)
-    Mp3Recorder.start()
-      .then(() => {})
-      .catch((e: Error) => console.error(e))
+    Mp3Recorder.start().catch((e: Error) => console.error(e))
   }
   const stopRecording = async () => {
     Mp3Recorder.stop()
@@ -199,10 +197,10 @@ const VoiceWave = ({ src, trash }: { src: string; trash: () => void }) => {
 
   useEffect(() => {
     if (hasMounted.current == false) {
-      ;(async () => {
+      const initWave = async () => {
         const WaveSurfer = (await import('wavesurfer.js')).default
 
-        let tWavesurfer = WaveSurfer.create({
+        const tWavesurfer = WaveSurfer.create({
           container: '#waveform',
           waveColor: '#a1a1aa',
           progressColor: '#e4e4e7',
@@ -221,8 +219,9 @@ const VoiceWave = ({ src, trash }: { src: string; trash: () => void }) => {
         tWavesurfer.on('pause', () => setIsPlaying(false))
         tWavesurfer.on('ready', () => setIsPlaying(false))
         setWavesurfer(tWavesurfer)
-      })()
+      }
 
+      initWave()
       return () => {
         hasMounted.current = true
       }
