@@ -20,6 +20,8 @@ generator js {
   previewFeatures = ["referentialIntegrity"]
 }
 
+// Real stuff
+
 model Show {
   id        String    @id @default(cuid())
   name      String    @unique @db.VarChar(255)
