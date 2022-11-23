@@ -42,7 +42,21 @@ export const podcastRouter = router({
         ],
       }
     }),
-  // getAll: publicProcedure.query(({ ctx }) => {
-  //   return ctx.prisma.example.findMany();
-  // }),
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    return { test: await ctx.prisma.show.findMany() }
+  }),
+  addPodcast: publicProcedure.mutation(({ ctx }) => {
+    console.log('asdfffffffffff')
+    ctx.prisma.show
+      .create({
+        data: {
+          name: 'asd',
+        },
+      })
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((e) => console.error(e))
+    return {}
+  }),
 })
