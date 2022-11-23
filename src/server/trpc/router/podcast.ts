@@ -1,3 +1,4 @@
+import Parser from 'rss-parser'
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
 
@@ -45,18 +46,36 @@ export const podcastRouter = router({
   getAll: publicProcedure.query(async ({ ctx }) => {
     return { test: await ctx.prisma.show.findMany() }
   }),
-  addPodcast: publicProcedure.mutation(({ ctx }) => {
-    console.log('asdfffffffffff')
-    ctx.prisma.show
-      .create({
-        data: {
-          name: 'asd',
-        },
-      })
-      .then((res) => {
-        console.log(res)
-      })
-      .catch((e) => console.error(e))
-    return {}
-  }),
+  addPodcast: publicProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      let parser = new Parser()
+      try {
+        let feed = await parser.parseURL(input)
+
+        const show = {
+          title: feed?.title,
+          description: feed?.description,
+          link: feed?.link,
+          feedUrl: feed?.feedUrl,
+          imageUrl: feed?.image?.url,
+        }
+        const ValidShow = z.object({
+          title: z.string(),
+          description: z.string(),
+          link: z.string(),
+          feedUrl: z.string(),
+          imageUrl: z.string(),
+        })
+        ValidShow.parse(show)
+
+        // await ctx.prisma.show.create({
+        //   data: show as Show,
+        // })
+        return { ...show, error: false }
+      } catch (e) {
+        console.error(e)
+        return { error: 'There was a problem getting data please email me' }
+      }
+    }),
 })

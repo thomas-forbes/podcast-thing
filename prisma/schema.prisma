@@ -23,11 +23,15 @@ generator js {
 // Real stuff
 
 model Show {
-  id        String    @id @default(cuid())
-  name      String    @unique @db.VarChar(255)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Episode   Episode[]
+  id          String    @id @default(cuid())
+  title       String    @unique @db.VarChar(255)
+  description String?   @db.Text
+  link        String?   @db.VarChar(255)
+  feedUrl     String    @db.VarChar(255)
+  imageUrl    String    @db.VarChar(255)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Episode     Episode[]
 }
 
 model Episode {
