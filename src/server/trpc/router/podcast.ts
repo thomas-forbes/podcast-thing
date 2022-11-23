@@ -1,4 +1,3 @@
-import { Show } from '@prisma/client'
 import Parser from 'rss-parser'
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
@@ -70,10 +69,10 @@ export const podcastRouter = router({
         })
         ValidShow.parse(show)
 
-        await ctx.prisma.show.create({
-          data: show as Show,
-        })
-        return { ...show, error: false }
+        // await ctx.prisma.show.create({
+        //   data: show as Show,
+        // })
+        return show as z.infer<typeof ValidShow>
       } catch (e) {
         console.error(e)
         return { error: 'There was a problem getting data please email me' }

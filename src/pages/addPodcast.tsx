@@ -32,16 +32,42 @@ export default function AddPodcast() {
           Add
         </button>
       </div>
-      {addPod.data?.error ? (
+      {addPod.data && 'error' in addPod.data ? (
         <p className="dark:text-white">{addPod.data.error}</p>
-      ) : addPod.data ? (
-        <div className="flex flex-col items-center">
-          <h2 className="dark:text-white">We got this information</h2>
-          {Object.keys(addPod.data).map((key) => (
-            <p className="dark:text-white">
-              {key}: {addPod.data[key]}
-            </p>
-          ))}
+      ) : addPod.data && 'title' in addPod.data ? (
+        <div className="flex flex-col space-y-2">
+          <h2 className="text-2xl font-bold dark:text-white">
+            We got this information
+          </h2>
+          <table>
+            <thead>
+              <tr>
+                {['Property', 'Value'].map((value) => (
+                  <th
+                    key={value}
+                    className="border border-white px-2 py-1 dark:text-white"
+                  >
+                    {value}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(addPod.data).map(([key, value]) => (
+                <tr>
+                  {[key, value].map((value, i) => (
+                    <td
+                      className={`border border-white px-2 py-1 ${
+                        i == 0 ? 'dark:text-white' : 'dark:text-slate-400'
+                      }`}
+                    >
+                      {value}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       ) : null}
     </Background>
