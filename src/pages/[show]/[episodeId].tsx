@@ -13,7 +13,7 @@ interface RatingType {
 
 const Loading = () => (
   <div className="flex min-h-screen items-center justify-center">
-    <div className="text-2xl font-bold dark:text-white">Loading...</div>
+    <div className="text-2xl font-bold">Loading...</div>
   </div>
 )
 
@@ -45,7 +45,7 @@ export default function Home() {
           {/* TEXT */}
         </div>
         <div className="flex w-full flex-col items-center space-y-4">
-          <h1 className="text-center text-2xl font-extrabold dark:text-white">
+          <h1 className="text-center text-2xl font-extrabold">
             {podcast.title}
           </h1>
           {/* make into 2 lines with expandability */}
@@ -54,7 +54,7 @@ export default function Home() {
         {/* RATING */}
         <div className="flex w-full flex-col items-center space-y-4">
           {/* HEADING */}
-          <h2 className="text-xl font-bold dark:text-white">Ratings</h2>
+          <h2 className="text-xl font-bold">Ratings</h2>
           {/* RATINGS */}
           {ratings.map(({ label, rating }) => (
             <Rating
@@ -76,7 +76,7 @@ export default function Home() {
         {/* COMMENTS */}
         <div className="flex w-full flex-col items-center space-y-4">
           {/* HEADING */}
-          <h2 className="text-xl font-bold dark:text-white">Comments</h2>
+          <h2 className="text-xl font-bold">Comments</h2>
           {/* BOX */}
           <CommentBox />
           {/* COMMENTS */}
@@ -115,7 +115,7 @@ const Rating = ({
   <div className="flex w-11/12 flex-row items-center justify-between">
     {/* MAYBE https://mui.com/material-ui/react-rating/#main-content */}
     {/* LABEL */}
-    <p className="flex-1 dark:text-white">{label}:</p>
+    <p className="flex-1">{label}:</p>
     {/* STARS */}
     <div className="flex flex-1 flex-row items-center justify-center">
       {[...Array(5)].map((_, i) => (

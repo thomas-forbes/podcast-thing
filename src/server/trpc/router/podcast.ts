@@ -1,3 +1,4 @@
+import { Show } from '@prisma/client'
 import Parser from 'rss-parser'
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
@@ -46,7 +47,7 @@ export const podcastRouter = router({
   getAll: publicProcedure.query(async ({ ctx }) => {
     return { test: await ctx.prisma.show.findMany() }
   }),
-  addPodcast: publicProcedure
+  addShow: publicProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
       let parser = new Parser()
@@ -69,13 +70,37 @@ export const podcastRouter = router({
         })
         ValidShow.parse(show)
 
-        // await ctx.prisma.show.create({
-        //   data: show as Show,
-        // })
+        console.log(show)
+        await ctx.prisma.show.create({
+          data: show as Show,
+        })
         return show as z.infer<typeof ValidShow>
-      } catch (e) {
+      } catch (e: any) {
         console.error(e)
-        return { error: 'There was a problem getting data please email me' }
+        return {
+          error:
+            e?.code == 'P2002'
+              ? 'A show with that title already exists'
+              : 'There was a problem getting data please email me',
+        }
+      }
+    }),
+  addEpisode: publicProcedure
+    .input(
+      z.object({
+        showId: z.string(),
+        title: z.string(),
+        description: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.episode.create({
+          data: input,
+        })
+        return input
+      } catch (e: any) {
+        return { error: 'There was a problem adding the episode' }
       }
     }),
 })

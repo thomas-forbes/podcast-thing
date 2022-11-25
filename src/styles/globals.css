@@ -7,6 +7,6 @@ html {
 }
 @media (prefers-color-scheme: dark) {
   html {
-    @apply bg-zinc-900;
+    @apply bg-zinc-900 text-white;
   }
 }

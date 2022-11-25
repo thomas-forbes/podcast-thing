@@ -35,14 +35,14 @@ model Show {
 }
 
 model Episode {
-  id        String    @id @default(cuid())
-  showId    String
-  title     String    @db.VarChar(255)
-  showNotes String    @db.Text
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  show      Show      @relation(fields: [showId], references: [id])
-  Comment   Comment[]
+  id          String    @id @default(cuid())
+  showId      String
+  title       String    @db.VarChar(255)
+  description String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  show        Show      @relation(fields: [showId], references: [id])
+  Comment     Comment[]
 }
 
 model Comment {

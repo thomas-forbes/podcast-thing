@@ -11,9 +11,7 @@ export default function Comment({
         {/* NAME */}
         <div className="h-5 w-5 rounded-full bg-white" />
         <div className="flex flex-col space-y-1">
-          <p className="text-sm font-bold dark:text-white">
-            {comment.user.name}
-          </p>
+          <p className="text-sm font-bold">{comment.user.name}</p>
           {/* TEXT */}
           <p className="text-sm dark:text-zinc-200">{comment.text}</p>
         </div>
