@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Background from '../components/Background'
+import Input from '../components/Input'
 import { trpc } from '../utils/trpc'
 
 export default function AddPodcast() {
@@ -17,11 +18,10 @@ export default function AddPodcast() {
           <h2 className="text-2xl font-semibold dark:text-slate-200">
             RSS Link
           </h2>
-          <input
-            className="w-full rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors duration-300 placeholder:text-zinc-400 focus:border-sky-600 focus:outline-none focus:ring-4 focus:ring-sky-600/10 dark:border-zinc-600 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500"
+          <Input
             placeholder="https://example.com/rss"
             value={rssLink}
-            onChange={(e) => setRssLink(e.target.value)}
+            setValue={setRssLink}
           />
         </div>
         {/* ADD */}

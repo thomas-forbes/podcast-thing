@@ -78,7 +78,8 @@ export const podcastRouter = router({
       } catch (e: any) {
         console.error(e)
         return {
-          error:
+          error: true,
+          message:
             e?.code == 'P2002'
               ? 'A show with that title already exists'
               : 'There was a problem getting data please email me',
@@ -98,9 +99,13 @@ export const podcastRouter = router({
         await ctx.prisma.episode.create({
           data: input,
         })
-        return input
+        return { error: false }
       } catch (e: any) {
-        return { error: 'There was a problem adding the episode' }
+        console.log(e)
+        return {
+          error: true,
+          message: 'There was a problem adding the episode',
+        }
       }
     }),
 })
