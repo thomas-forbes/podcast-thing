@@ -31,6 +31,8 @@ export default function Question({
           minRows={minRows}
           className={styles}
           placeholder={placeholder}
+          value={value}
+          onChange={(e) => setValue && setValue(e.target.value)}
         />
       ) : (
         <input

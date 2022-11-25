@@ -4,16 +4,16 @@ import { publicProcedure, router } from '../trpc'
 
 export const podcastRouter = router({
   getEpisode: publicProcedure
-    .input(z.object({ show: z.string(), episode: z.string() }))
+    .input(z.object({ showSlug: z.string(), episodeSlug: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
         const show = await ctx.prisma.show.findUnique({
-          where: { title: input.show },
+          where: { slug: input.showSlug },
         })
         if (!show) throw new Error('Show not found')
 
-        const episode = await ctx.prisma.episode.findFirst({
-          where: { AND: [{ title: input.episode }, { showId: show.id }] },
+        const episode = await ctx.prisma.episode.findUnique({
+          where: { slug: input.episodeSlug },
         })
         if (!episode) throw new Error('Episode not found')
 
@@ -39,7 +39,6 @@ export const podcastRouter = router({
       let parser = new Parser()
       try {
         let feed = await parser.parseURL(input.rssLink)
-        console.log(JSON.stringify(feed))
 
         // TODO: validate slug
         const show = {
@@ -85,8 +84,13 @@ export const podcastRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const slug = input.title
+          .toLowerCase()
+          .replace(/ /g, '-')
+          .replace(/[^\w-]+/g, '')
+
         await ctx.prisma.episode.create({
-          data: input,
+          data: { ...input, slug },
         })
         return { error: false }
       } catch (e: any) {

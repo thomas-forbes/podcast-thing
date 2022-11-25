@@ -23,8 +23,8 @@ export default function Home() {
 
   const { data: episode, isLoading } = trpc.podcast.getEpisode.useQuery(
     {
-      show: showSlug as string,
-      episode: episodeSlug as string,
+      showSlug: showSlug as string,
+      episodeSlug: episodeSlug as string,
     },
     { enabled: typeof showSlug == 'string' && typeof episodeSlug == 'string' }
   )
