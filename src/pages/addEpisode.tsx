@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Background from '../components/Background'
-import Input from '../components/Input'
+import Question from '../components/Question'
 import { trpc } from '../utils/trpc'
 
 export default function AddPodcast() {
@@ -16,40 +16,29 @@ export default function AddPodcast() {
       {/* QUESTIONS */}
       <div className="flex w-full max-w-lg flex-col space-y-4">
         {/* Title */}
-        {[
-          {
-            label: 'Title',
-            value: title,
-            setValue: setTitle,
-            placeholder: 'Amazing podcast...',
-          },
-          {
-            label: 'Description',
-            value: description,
-            setValue: setDescription,
-            placeholder: 'In this episode...',
-            textArea: true,
-            minRows: 3,
-          },
-        ].map(({ label, value, setValue, placeholder, textArea, minRows }) => (
-          <div className="space-y-2">
-            <h2 className="text-2xl font-semibold dark:text-slate-200">
-              {label}
-            </h2>
-            <Input
-              placeholder={placeholder}
-              value={value}
-              setValue={setValue}
-              textArea={textArea}
-              minRows={minRows}
-            />
-          </div>
-        ))}
+        <Question
+          label="Title"
+          value={title}
+          setValue={setTitle}
+          placeholder={'Amazing podcast...'}
+        />
+        <Question
+          label="Description"
+          value={description}
+          setValue={setDescription}
+          placeholder="In this episode..."
+          textArea
+          minRows={3}
+        />
         {/* ADD */}
         <button
           className="rounded-md bg-sky-500 py-2 px-4 text-lg font-semibold text-sky-100 outline-offset-2 transition hover:bg-sky-400 active:bg-sky-500 active:text-sky-100/80 active:transition-none dark:bg-sky-600 dark:hover:bg-sky-500 dark:active:bg-sky-600 dark:active:text-sky-100/70"
           onClick={() =>
-            addEpisode.mutate({ title, description, showId: 'test' })
+            addEpisode.mutate({
+              title,
+              description,
+              showId: 'clawgppts0002wupu3az3tu97',
+            })
           }
         >
           Add

@@ -1,80 +1,69 @@
-import { Show } from '@prisma/client'
 import Parser from 'rss-parser'
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
 
 export const podcastRouter = router({
   getEpisode: publicProcedure
-    .input(z.object({ show: z.string(), episodeId: z.string() }))
-    .query(({ input }) => {
-      return {
-        title:
-          'Why you need a single focus (and ditch your portfolio of projects) - Chris Frantz, Loops',
-        show: 'IndieBites',
-        showNotes:
-          "Chris Frantz is your agony aunt for your multiple projects. You've probably got multiple projects and it's just not working out. Chris is here to cut through your excuses and explain why you need to focus on a single thing to turn it into an actual business (and not just a hobby).",
-        imgUrl: '/indiebites.png',
-        comments: [
-          {
-            id: '1',
-            text: 'This is a comment',
-            user: {
-              id: '1',
-              name: 'Chris',
-            },
-            replies: [
-              {
-                id: '3',
-                text: 'I disagree',
-                user: {
-                  id: '3',
-                  name: 'Better Chris',
-                },
-              },
-            ],
+    .input(z.object({ show: z.string(), episode: z.string() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const show = await ctx.prisma.show.findUnique({
+          where: { title: input.show },
+        })
+        if (!show) throw new Error('Show not found')
+
+        const episode = await ctx.prisma.episode.findFirst({
+          where: { AND: [{ title: input.episode }, { showId: show.id }] },
+        })
+        if (!episode) throw new Error('Episode not found')
+
+        return {
+          error: false,
+          data: {
+            title: episode.title,
+            description: episode.description,
+            imgUrl: show.imageUrl,
           },
-          {
-            id: '2',
-            text: 'This is another comment',
-            user: {
-              id: '2',
-              name: 'Chris',
-            },
-          },
-        ],
+        }
+      } catch (e: any) {
+        console.error(e)
+        return { error: true, message: e?.message, data: {} }
       }
     }),
   getAll: publicProcedure.query(async ({ ctx }) => {
     return { test: await ctx.prisma.show.findMany() }
   }),
   addShow: publicProcedure
-    .input(z.string())
+    .input(z.object({ rssLink: z.string(), slug: z.string() }))
     .mutation(async ({ ctx, input }) => {
       let parser = new Parser()
       try {
-        let feed = await parser.parseURL(input)
+        let feed = await parser.parseURL(input.rssLink)
+        console.log(JSON.stringify(feed))
 
+        // TODO: validate slug
         const show = {
+          slug: input.slug,
           title: feed?.title,
           description: feed?.description,
           link: feed?.link,
           feedUrl: feed?.feedUrl,
           imageUrl: feed?.image?.url,
         }
-        const ValidShow = z.object({
+        const showSchema = z.object({
+          slug: z.string(),
           title: z.string(),
           description: z.string(),
           link: z.string(),
           feedUrl: z.string(),
           imageUrl: z.string(),
         })
-        ValidShow.parse(show)
+        showSchema.parse(show)
 
-        console.log(show)
         await ctx.prisma.show.create({
-          data: show as Show,
+          data: show as z.infer<typeof showSchema>,
         })
-        return show as z.infer<typeof ValidShow>
+        return show as z.infer<typeof showSchema>
       } catch (e: any) {
         console.error(e)
         return {

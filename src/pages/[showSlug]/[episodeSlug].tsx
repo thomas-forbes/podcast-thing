@@ -19,14 +19,14 @@ const Loading = () => (
 
 export default function Home() {
   const router = useRouter()
-  const { show, episodeId } = router.query
+  const { showSlug, episodeSlug } = router.query
 
-  const { data: podcast, isLoading } = trpc.podcast.getEpisode.useQuery(
+  const { data: episode, isLoading } = trpc.podcast.getEpisode.useQuery(
     {
-      show: show as string,
-      episodeId: episodeId as string,
+      show: showSlug as string,
+      episode: episodeSlug as string,
     },
-    { enabled: typeof show == 'string' && typeof episodeId == 'string' }
+    { enabled: typeof showSlug == 'string' && typeof episodeSlug == 'string' }
   )
 
   const [ratings, setRatings] = useState<RatingType[]>([
@@ -35,21 +35,23 @@ export default function Home() {
     { label: 'Production', rating: -1 },
   ])
 
-  if (!router.isReady || isLoading || podcast == undefined) return <Loading />
+  if (!router.isReady || isLoading || episode == undefined) return <Loading />
   return (
     <>
       <Background mainColumn>
         {/* IMAGE */}
-        <div className="relative h-32 w-32 overflow-hidden">
-          <img src={podcast.imgUrl} />
+        <div className="relative h-32 w-32 overflow-hidden rounded-md shadow-xl shadow-slate-800">
+          <img src={episode.data.imgUrl} />
           {/* TEXT */}
         </div>
         <div className="flex w-full flex-col items-center space-y-4">
           <h1 className="text-center text-2xl font-extrabold">
-            {podcast.title}
+            {episode.data.title}
           </h1>
           {/* make into 2 lines with expandability */}
-          <p className="text-center dark:text-slate-200">{podcast.showNotes}</p>
+          <p className="text-center dark:text-slate-200">
+            {episode.data.description}
+          </p>
         </div>
         {/* RATING */}
         <div className="flex w-full flex-col items-center space-y-4">
@@ -81,7 +83,7 @@ export default function Home() {
           <CommentBox />
           {/* COMMENTS */}
           <div className="flex w-full flex-col space-y-4">
-            {podcast.comments.map((comment: any) => (
+            {[].map((comment: any) => (
               <div
                 key={'comment:' + comment.id}
                 className="flex w-full flex-col space-y-4"

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import Background from '../components/Background'
-import Input from '../components/Input'
+import Question from '../components/Question'
 import { trpc } from '../utils/trpc'
 
 export default function AddPodcast() {
-  const [rssLink, setRssLink] = useState('')
   const addShow = trpc.podcast.addShow.useMutation()
+
+  const [rssLink, setRssLink] = useState('')
+  const [slug, setSlug] = useState('')
   return (
     <Background mainColumn className="max-w-4xl">
       <h1 className="text-center text-5xl font-bold">
@@ -14,20 +16,23 @@ export default function AddPodcast() {
       {/* RSS */}
       <div className="flex w-full max-w-lg flex-col space-y-4">
         {/* RSS LINK */}
-        <div className="space-y-2">
-          <h2 className="text-2xl font-semibold dark:text-slate-200">
-            RSS Link
-          </h2>
-          <Input
-            placeholder="https://example.com/rss"
-            value={rssLink}
-            setValue={setRssLink}
-          />
-        </div>
+        <Question
+          label="RSS Link"
+          value={rssLink}
+          setValue={setRssLink}
+          placeholder={'https://example.com/rss'}
+        />
+        {/* SLUG */}
+        <Question
+          label="Slug name for podcast"
+          value={slug}
+          setValue={setSlug}
+          placeholder="example-podcast"
+        />
         {/* ADD */}
         <button
           className="rounded-md bg-sky-500 py-2 px-4 text-lg font-semibold text-sky-100 outline-offset-2 transition hover:bg-sky-400 active:bg-sky-500 active:text-sky-100/80 active:transition-none dark:bg-sky-600 dark:hover:bg-sky-500 dark:active:bg-sky-600 dark:active:text-sky-100/70"
-          onClick={() => addShow.mutate(rssLink)}
+          onClick={() => addShow.mutate({ rssLink, slug })}
         >
           Add
         </button>

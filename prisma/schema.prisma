@@ -25,6 +25,7 @@ generator js {
 model Show {
   id          String    @id @default(cuid())
   title       String    @unique @db.VarChar(255)
+  slug        String    @unique @db.VarChar(255)
   description String?   @db.Text
   link        String?   @db.VarChar(255)
   feedUrl     String    @db.VarChar(255)
@@ -32,17 +33,22 @@ model Show {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   Episode     Episode[]
+
+  @@index([slug])
 }
 
 model Episode {
   id          String    @id @default(cuid())
-  showId      String
+  slug        String    @unique @db.VarChar(255)
   title       String    @db.VarChar(255)
-  description String    @db.Text
+  description String?   @db.Text
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  showId      String
   show        Show      @relation(fields: [showId], references: [id])
   Comment     Comment[]
+
+  @@index([slug, showId])
 }
 
 model Comment {
