@@ -20,32 +20,49 @@ generator js {
   previewFeatures = ["referentialIntegrity"]
 }
 
+// Real stuff
+
 model Show {
-  id        String    @id @default(cuid())
-  name      String    @unique @db.VarChar(255)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Episode   Episode[]
+  id          String    @id @default(cuid())
+  title       String    @unique @db.VarChar(255)
+  slug        String    @unique @db.VarChar(255)
+  description String?   @db.Text
+  link        String?   @db.VarChar(255)
+  feedUrl     String    @db.VarChar(255)
+  imageUrl    String    @db.VarChar(255)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Episode     Episode[]
+
+  @@index([slug])
 }
 
 model Episode {
-  id        String    @id @default(cuid())
-  showId    String
-  title     String    @db.VarChar(255)
-  showNotes String    @db.Text
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  show      Show      @relation(fields: [showId], references: [id])
-  Comment   Comment[]
+  id          String    @id @default(cuid())
+  slug        String    @unique @db.VarChar(255)
+  title       String    @db.VarChar(255)
+  description String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  showId      String
+  show        Show      @relation(fields: [showId], references: [id])
+  Comment     Comment[]
+
+  @@index([slug, showId])
 }
 
 model Comment {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
+  text      String    @db.Text
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
   episodeId String
-  text      String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  episode   Episode  @relation(fields: [episodeId], references: [id])
+  episode   Episode   @relation(fields: [episodeId], references: [id])
+  replyToId String?
+  replyTo   Comment?  @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies   Comment[] @relation("ReplyTo")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 // ------------------------------------
@@ -85,6 +102,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Comment       Comment[]
 }
 
 model VerificationToken {
