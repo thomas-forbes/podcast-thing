@@ -1,10 +1,10 @@
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 
-export default function Comment({
-  comment,
-}: {
+interface props {
   comment: { user: { name: string; id: string }; text: string }
-}) {
+}
+
+export default function Comment({ comment }: props) {
   return (
     <div className="flex w-full flex-col space-y-1">
       <div className="flex flex-row space-x-2">

@@ -52,12 +52,17 @@ model Episode {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
+  text      String    @db.Text
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
   episodeId String
-  text      String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  episode   Episode  @relation(fields: [episodeId], references: [id])
+  episode   Episode   @relation(fields: [episodeId], references: [id])
+  replyToId String?
+  replyTo   Comment?  @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies   Comment[] @relation("ReplyTo")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 // ------------------------------------
@@ -97,6 +102,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Comment       Comment[]
 }
 
 model VerificationToken {

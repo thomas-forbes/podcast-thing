@@ -14,8 +14,10 @@ export const podcastRouter = router({
 
         const episode = await ctx.prisma.episode.findUnique({
           where: { slug: input.episodeSlug },
+          include: { Comment: true },
         })
         if (!episode) throw new Error('Episode not found')
+        console.log(episode)
 
         return {
           error: false,
@@ -89,6 +91,7 @@ export const podcastRouter = router({
           .replace(/ /g, '-')
           .replace(/[^\w-]+/g, '')
 
+        // TODO: make sure showId is valid
         await ctx.prisma.episode.create({
           data: { ...input, slug },
         })
