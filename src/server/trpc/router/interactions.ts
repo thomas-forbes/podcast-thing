@@ -23,8 +23,8 @@ export const interactionRouter = router({
         //     text: input.text,
         //   },
         // })
-        console.log(comment)
-        return { error: false, data: comment }
+        // console.log(comment)
+        return { error: false, data: {} }
       } catch (e: any) {
         console.error(e)
         return {

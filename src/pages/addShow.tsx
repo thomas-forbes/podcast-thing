@@ -54,9 +54,10 @@ export default function AddPodcast() {
             </thead>
             <tbody>
               {Object.entries(addShow.data).map(([key, value]) => (
-                <tr>
+                <tr key={key}>
                   {[key, value].map((value, i) => (
                     <td
+                      key={value}
                       className={`border border-black px-2 py-1 dark:border-white ${
                         i == 0 && 'dark:text-slate-400'
                       }`}

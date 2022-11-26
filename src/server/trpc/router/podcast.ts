@@ -38,9 +38,9 @@ export const podcastRouter = router({
   addShow: publicProcedure
     .input(z.object({ rssLink: z.string(), slug: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      let parser = new Parser()
+      const parser = new Parser()
       try {
-        let feed = await parser.parseURL(input.rssLink)
+        const feed = await parser.parseURL(input.rssLink)
 
         // TODO: validate slug
         const show = {

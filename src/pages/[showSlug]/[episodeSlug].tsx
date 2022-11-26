@@ -83,7 +83,7 @@ export default function Home() {
           <CommentBox />
           {/* COMMENTS */}
           <div className="flex w-full flex-col space-y-4">
-            {[].map((comment) => (
+            {[].map((comment: any) => (
               <div
                 key={'comment:' + comment.id}
                 className="flex w-full flex-col space-y-4"
