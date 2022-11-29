@@ -1,8 +1,11 @@
-import { Comment } from '@prisma/client'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 
 interface props {
-  comment: Comment
+  comment: {
+    text: string
+    id: string
+    name: string
+  }
 }
 
 export default function CommentBox({ comment }: props) {
@@ -12,7 +15,7 @@ export default function CommentBox({ comment }: props) {
         {/* NAME */}
         <div className="h-5 w-5 rounded-full bg-white" />
         <div className="flex flex-col space-y-1">
-          <p className="text-sm font-bold">{comment.userId}</p>
+          <p className="text-sm font-bold">{comment.name}</p>
           {/* TEXT */}
           <p className="text-sm dark:text-zinc-200">{comment.text}</p>
         </div>

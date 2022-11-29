@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai'
 import Background from '../../components/Background'
-import CommentBox from '../../components/episode/Comment'
+import CommentBox from '../../components/episode/CommentBox'
 import CommentInput from '../../components/episode/CommentInput'
 import { trpc } from '../../utils/trpc'
 
@@ -41,7 +41,7 @@ export default function Home() {
       <Background mainColumn>
         {/* IMAGE */}
         <div className="relative h-32 w-32 overflow-hidden rounded-md shadow-xl shadow-slate-800">
-          <img src={episode.data.imgUrl} />
+          <img src={episode.data.imgUrl ?? ''} alt="Podcast Image" />
           {/* TEXT */}
         </div>
         <div className="flex w-full flex-col items-center space-y-4">
@@ -63,13 +63,12 @@ export default function Home() {
               key={label}
               label={label}
               rating={rating}
-              setRating={(r) =>
-                setRatings((ratings: RatingType[]) => {
-                  const nRatings = [...ratings]
-                  const index = ratings.findIndex((r) => r.label === label)
-                  nRatings[index]!.rating = r
-                  return nRatings
-                })
+              setRating={(newRating) =>
+                setRatings((ratings: RatingType[]) =>
+                  [...ratings].map((r) =>
+                    r.label == label ? { ...r, rating: newRating } : r
+                  )
+                )
               }
             />
           ))}
@@ -92,9 +91,9 @@ export default function Home() {
                 <CommentBox comment={comment} />
                 {/* REPLIES */}
                 <div className="ml-4 flex flex-col">
-                  {/* {comment?.replies?.map((reply: any) => (
-                    <Comment key={'reply:' + reply.id} comment={reply} />
-                  ))} */}
+                  {comment.replies.map((reply) => (
+                    <CommentBox key={'reply:' + reply.id} comment={reply} />
+                  ))}
                 </div>
               </div>
             ))}

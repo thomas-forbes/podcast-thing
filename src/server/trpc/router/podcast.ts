@@ -1,3 +1,4 @@
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import Parser from 'rss-parser'
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
@@ -14,7 +15,11 @@ export const podcastRouter = router({
 
         const episode = await ctx.prisma.episode.findUnique({
           where: { slug: input.episodeSlug },
-          include: { Comment: true },
+          include: {
+            comments: {
+              include: { user: true, replies: { include: { user: true } } },
+            },
+          },
         })
         if (!episode) throw new Error('Episode not found')
         console.log(episode)
@@ -25,12 +30,26 @@ export const podcastRouter = router({
             title: episode.title,
             description: episode.description,
             imgUrl: show.imageUrl,
-            comments: episode.Comment ?? [],
+            comments:
+              episode.comments.map((comment) => ({
+                text: comment.text,
+                id: comment.id,
+                name: comment.user.name ?? 'No Name',
+                replies: comment.replies.map((reply) => ({
+                  text: reply.text,
+                  id: reply.id,
+                  name: reply.user.name ?? 'No Name',
+                })),
+              })) ?? [],
           },
         }
-      } catch (e: any) {
+      } catch (e) {
         console.error(e)
-        return { error: true, message: e?.message, data: {} }
+        return {
+          error: true,
+          message: e instanceof Error ? e.message : 'Error',
+          data: {},
+        }
       }
     }),
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -66,12 +85,12 @@ export const podcastRouter = router({
           data: show as z.infer<typeof showSchema>,
         })
         return show as z.infer<typeof showSchema>
-      } catch (e: any) {
+      } catch (e) {
         console.error(e)
         return {
           error: true,
           message:
-            e?.code == 'P2002'
+            e instanceof PrismaClientKnownRequestError && e.code == 'P2002'
               ? 'A show with that title already exists'
               : 'There was a problem getting data please email me',
         }
@@ -97,8 +116,8 @@ export const podcastRouter = router({
           data: { ...input, slug },
         })
         return { error: false }
-      } catch (e: any) {
-        console.log(e)
+      } catch (e) {
+        console.error(e)
         return {
           error: true,
           message: 'There was a problem adding the episode',

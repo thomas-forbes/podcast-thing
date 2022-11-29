@@ -26,11 +26,14 @@ export const interactionRouter = router({
         })
         console.log(comment)
         return { error: false, data: comment }
-      } catch (e: any) {
+      } catch (e) {
         console.error(e)
         return {
           error: false,
-          message: e.message ?? 'There was an error creating your comment',
+          message:
+            e instanceof Error
+              ? e.message
+              : 'There was an error creating your comment',
         }
       }
     }),

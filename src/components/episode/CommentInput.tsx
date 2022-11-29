@@ -28,7 +28,7 @@ export default function CommentInput() {
   const stopRecording = async () => {
     Mp3Recorder.stop()
       .getMp3()
-      .then(([_, blob]: [any, Blob]) => {
+      .then(([_, blob]: [Buffer, Blob]) => {
         setRecURL(URL.createObjectURL(blob))
         setIsRecording(false)
       })
