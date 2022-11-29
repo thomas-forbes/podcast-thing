@@ -32,7 +32,7 @@ export default function CommentBox({
           {true ? <FaRegHeart /> : <FaHeart className="text-red-500" />}
         </button>
         <button className="appearance-none text-xs font-bold" onClick={onReply}>
-          {isReplying ? 'Cancel Reply' : 'Reply'}
+          {isReplying ? 'Cancel' : 'Reply'}
         </button>
         <button className="appearance-none text-xs font-bold">Report</button>
       </div>

@@ -14,10 +14,11 @@ import { trpc } from '../../utils/trpc'
 
 interface props {
   reply?: boolean
+  replyToId?: string
 }
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 })
-export default function CommentInput({ reply = false }: props) {
+export default function CommentInput({ reply = false, replyToId }: props) {
   const { query } = useRouter()
   const addComment = trpc.interactions.addComment.useMutation()
 
@@ -38,7 +39,6 @@ export default function CommentInput({ reply = false }: props) {
       })
       .catch((e: Error) => console.log(e))
   }
-  ;('clawmhfv90004wu1mlr32a23o')
   return (
     <div className={`w-full ${reply && 'ml-4'}`}>
       {/* {recURL && <audio src={recURL} controls />} */}
@@ -76,9 +76,11 @@ export default function CommentInput({ reply = false }: props) {
             episodeSlug: (query.episodeSlug as string) ?? '',
             text: commentText,
             userId: '6969',
+            ...(reply && { replyToId }),
           })
         }
-        className="-mt-1 w-full rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition hover:bg-zinc-400 active:bg-zinc-500 active:text-zinc-100/80 active:transition-none dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70"
+        disabled={commentText.length === 0}
+        className="-mt-1 w-full rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition hover:bg-zinc-400 active:bg-zinc-500 active:text-zinc-100/80 active:transition-none disabled:text-opacity-60 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70"
       >
         {reply ? 'Reply' : 'Comment'}
       </button>

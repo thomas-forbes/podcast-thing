@@ -8,6 +8,7 @@ export const interactionRouter = router({
         userId: z.string(),
         episodeSlug: z.string(),
         text: z.string(),
+        replyToId: z.string().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -22,6 +23,7 @@ export const interactionRouter = router({
             userId: input.userId,
             episodeId: episode.id,
             text: input.text,
+            replyToId: input.replyToId,
           },
         })
         console.log(comment)
