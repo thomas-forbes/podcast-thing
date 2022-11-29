@@ -12,8 +12,12 @@ import {
 import TextareaAutosize from 'react-textarea-autosize'
 import { trpc } from '../../utils/trpc'
 
+interface props {
+  reply?: boolean
+}
+
 const Mp3Recorder = new MicRecorder({ bitRate: 128 })
-export default function CommentInput() {
+export default function CommentInput({ reply = false }: props) {
   const { query } = useRouter()
   const addComment = trpc.interactions.addComment.useMutation()
 
@@ -36,7 +40,7 @@ export default function CommentInput() {
   }
   ;('clawmhfv90004wu1mlr32a23o')
   return (
-    <div className="w-full">
+    <div className={`w-full ${reply && 'ml-4'}`}>
       {/* {recURL && <audio src={recURL} controls />} */}
       {/* RECORD / STOP */}
       <button
@@ -59,11 +63,11 @@ export default function CommentInput() {
         <VoiceWave src={recURL || ''} trash={() => setRecURL(null)} />
       ) : (
         <TextareaAutosize
-          className="w-full resize-none appearance-none border-x border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors placeholder:text-zinc-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500"
+          className="w-full resize-none appearance-none border-x border-zinc-900/10 bg-white p-3 shadow-md shadow-zinc-800/5 transition-colors placeholder:text-zinc-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500"
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
           placeholder="Comment..."
-          minRows={3}
+          minRows={reply ? 1 : 3}
         />
       )}
       <button
@@ -76,7 +80,7 @@ export default function CommentInput() {
         }
         className="-mt-1 w-full rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition hover:bg-zinc-400 active:bg-zinc-500 active:text-zinc-100/80 active:transition-none dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70"
       >
-        Comment
+        {reply ? 'Reply' : 'Comment'}
       </button>
     </div>
   )

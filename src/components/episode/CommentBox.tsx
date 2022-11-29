@@ -6,9 +6,15 @@ interface props {
     id: string
     name: string
   }
+  onReply?: () => void
+  isReplying?: boolean
 }
 
-export default function CommentBox({ comment }: props) {
+export default function CommentBox({
+  comment,
+  onReply,
+  isReplying = false,
+}: props) {
   return (
     <div className="flex w-full flex-col space-y-1">
       <div className="flex flex-row space-x-2">
@@ -25,7 +31,9 @@ export default function CommentBox({ comment }: props) {
         <button className="appearance-none py-1 text-sm">
           {true ? <FaRegHeart /> : <FaHeart className="text-red-500" />}
         </button>
-        <button className="appearance-none text-xs font-bold">Reply</button>
+        <button className="appearance-none text-xs font-bold" onClick={onReply}>
+          {isReplying ? 'Cancel Reply' : 'Reply'}
+        </button>
         <button className="appearance-none text-xs font-bold">Report</button>
       </div>
     </div>
