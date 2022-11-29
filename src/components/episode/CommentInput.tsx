@@ -13,7 +13,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 import { trpc } from '../../utils/trpc'
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 })
-export default function CommentBox() {
+export default function CommentInput() {
   const { query } = useRouter()
   const addComment = trpc.interactions.addComment.useMutation()
 

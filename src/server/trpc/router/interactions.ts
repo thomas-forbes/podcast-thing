@@ -16,15 +16,16 @@ export const interactionRouter = router({
           where: { slug: input.episodeSlug },
         })
         if (!episode) throw 'Episode not found'
-        // const comment = await ctx.prisma.comment.create({
-        //   data: {
-        //     userId: input.userId,
-        //     episodeId: episode.id,
-        //     text: input.text,
-        //   },
-        // })
-        // console.log(comment)
-        return { error: false, data: {} }
+
+        const comment = await ctx.prisma.comment.create({
+          data: {
+            userId: input.userId,
+            episodeId: episode.id,
+            text: input.text,
+          },
+        })
+        console.log(comment)
+        return { error: false, data: comment }
       } catch (e: any) {
         console.error(e)
         return {

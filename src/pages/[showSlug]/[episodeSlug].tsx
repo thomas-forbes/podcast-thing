@@ -2,8 +2,8 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai'
 import Background from '../../components/Background'
-import Comment from '../../components/episode/Comment'
-import CommentBox from '../../components/episode/CommentBox'
+import CommentBox from '../../components/episode/Comment'
+import CommentInput from '../../components/episode/CommentInput'
 import { trpc } from '../../utils/trpc'
 
 interface RatingType {
@@ -80,21 +80,21 @@ export default function Home() {
           {/* HEADING */}
           <h2 className="text-xl font-bold">Comments</h2>
           {/* BOX */}
-          <CommentBox />
+          <CommentInput />
           {/* COMMENTS */}
           <div className="flex w-full flex-col space-y-4">
-            {[].map((comment: any) => (
+            {episode.data.comments?.map((comment) => (
               <div
                 key={'comment:' + comment.id}
                 className="flex w-full flex-col space-y-4"
               >
                 {/* OG COMMENT */}
-                <Comment comment={comment} />
+                <CommentBox comment={comment} />
                 {/* REPLIES */}
                 <div className="ml-4 flex flex-col">
-                  {comment?.replies?.map((reply: any) => (
+                  {/* {comment?.replies?.map((reply: any) => (
                     <Comment key={'reply:' + reply.id} comment={reply} />
-                  ))}
+                  ))} */}
                 </div>
               </div>
             ))}

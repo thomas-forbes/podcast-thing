@@ -25,6 +25,7 @@ export const podcastRouter = router({
             title: episode.title,
             description: episode.description,
             imgUrl: show.imageUrl,
+            comments: episode.Comment ?? [],
           },
         }
       } catch (e: any) {

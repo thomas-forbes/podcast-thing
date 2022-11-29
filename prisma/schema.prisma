@@ -46,7 +46,7 @@ model Episode {
   updatedAt   DateTime  @updatedAt
   showId      String
   show        Show      @relation(fields: [showId], references: [id])
-  Comment     Comment[]
+  comments    Comment[]
 
   @@index([slug, showId])
 }
