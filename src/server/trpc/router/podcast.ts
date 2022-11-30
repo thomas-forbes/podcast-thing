@@ -30,19 +30,7 @@ export const podcastRouter = router({
             title: episode.title,
             description: episode.description,
             imgUrl: show.imageUrl,
-            comments:
-              episode.comments
-                .filter((comment) => !comment.replyToId)
-                .map((comment) => ({
-                  text: comment.text,
-                  id: comment.id,
-                  name: comment.user.name ?? 'No Name',
-                  replies: comment.replies.map((reply) => ({
-                    text: reply.text,
-                    id: reply.id,
-                    name: reply.user.name ?? 'No Name',
-                  })),
-                })) ?? [],
+            comments: episode.comments.filter((c) => !c.replyToId),
           },
         }
       } catch (e) {

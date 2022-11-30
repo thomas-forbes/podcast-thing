@@ -1,18 +1,20 @@
 import { z } from 'zod'
-import { publicProcedure, router } from '../trpc'
+import { protectedProcedure, router } from '../trpc'
 
 export const interactionRouter = router({
-  addComment: publicProcedure
+  addComment: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
         episodeSlug: z.string(),
+        podcastSlug: z.string(),
         text: z.string(),
         replyToId: z.string().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        // TODO: implement podcastSlug and make episode slug not unique.
+        // make unique pair episode slug and podcastId
         const episode = await ctx.prisma.episode.findUnique({
           where: { slug: input.episodeSlug },
         })
@@ -20,7 +22,7 @@ export const interactionRouter = router({
 
         const comment = await ctx.prisma.comment.create({
           data: {
-            userId: input.userId,
+            userId: ctx.session.user.id,
             episodeId: episode.id,
             text: input.text,
             replyToId: input.replyToId,
@@ -39,14 +41,14 @@ export const interactionRouter = router({
         }
       }
     }),
-  addLike: publicProcedure
-    .input(z.object({ commentId: z.string(), userId: z.string() }))
+  addLike: protectedProcedure
+    .input(z.object({ commentId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       try {
         const like = await ctx.prisma.like.create({
           data: {
             commentId: input.commentId,
-            userId: input.userId,
+            userId: ctx.session.user.id,
           },
         })
 

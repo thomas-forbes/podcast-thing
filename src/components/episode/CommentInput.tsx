@@ -1,5 +1,6 @@
 // @ts-expect-error the lib is not typed
 import MicRecorder from 'mic-recorder-to-mp3'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import {
@@ -19,8 +20,9 @@ interface props {
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 })
 export default function CommentInput({ reply = false, replyToId }: props) {
-  const { query } = useRouter()
+  const router = useRouter()
   const addComment = trpc.interactions.addComment.useMutation()
+  const { data: session } = useSession()
 
   const [commentText, setCommentText] = useState('')
   const [isRecording, setIsRecording] = useState(false)
@@ -70,14 +72,18 @@ export default function CommentInput({ reply = false, replyToId }: props) {
           minRows={reply ? 1 : 3}
         />
       )}
+      {/* TODO: save user text while they sign up maybe save in url param */}
       <button
-        onClick={() =>
-          addComment.mutate({
-            episodeSlug: (query.episodeSlug as string) ?? '',
-            text: commentText,
-            userId: '6969',
-            ...(reply && { replyToId }),
-          })
+        onClick={
+          session?.user
+            ? () =>
+                addComment.mutate({
+                  episodeSlug: (router.query.episodeSlug as string) ?? '',
+                  podcastSlug: (router.query.podcastSlug as string) ?? '',
+                  text: commentText,
+                  ...(reply && { replyToId }),
+                })
+            : () => router.push('/login')
         }
         disabled={commentText.length === 0}
         className="-mt-1 w-full rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition enabled:hover:bg-zinc-400 enabled:active:bg-zinc-500 enabled:active:text-zinc-100/80 enabled:active:transition-none disabled:opacity-60 dark:bg-zinc-700 enabled:dark:hover:bg-zinc-600 enabled:dark:active:bg-zinc-700 enabled:dark:active:text-zinc-100/70"

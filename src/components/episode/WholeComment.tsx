@@ -1,17 +1,14 @@
+import { Comment, User } from '@prisma/client'
 import { useState } from 'react'
 import CommentBox from './CommentBox'
 import CommentInput from './CommentInput'
 
 interface props {
-  comment: {
-    text: string
-    id: string
-    name: string
-    replies: {
-      text: string
-      id: string
-      name: string
-    }[]
+  comment: Comment & {
+    user: User
+    replies: (Comment & {
+      user: User
+    })[]
   }
 }
 
@@ -44,10 +41,8 @@ export default function WholeComment({ comment }: props) {
 const Reply = ({
   comment,
 }: {
-  comment: {
-    text: string
-    id: string
-    name: string
+  comment: Comment & {
+    user: User
   }
 }) => {
   // const [showInput, setShowInput] = useState(false)
