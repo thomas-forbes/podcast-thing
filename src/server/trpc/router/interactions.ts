@@ -39,4 +39,28 @@ export const interactionRouter = router({
         }
       }
     }),
+  addLike: publicProcedure
+    .input(z.object({ commentId: z.string(), userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const like = await ctx.prisma.like.create({
+          data: {
+            commentId: input.commentId,
+            userId: input.userId,
+          },
+        })
+
+        console.log(like)
+        return { error: false, data: like }
+      } catch (e) {
+        console.error(e)
+        return {
+          error: false,
+          message:
+            e instanceof Error
+              ? e.message
+              : 'There was an error creating your like',
+        }
+      }
+    }),
 })

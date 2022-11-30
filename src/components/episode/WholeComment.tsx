@@ -50,15 +50,16 @@ const Reply = ({
     name: string
   }
 }) => {
-  const [showInput, setShowInput] = useState(false)
+  // const [showInput, setShowInput] = useState(false)
   return (
     <div className="space-y-2">
       <CommentBox
         comment={comment}
-        onReply={() => setShowInput(!showInput)}
-        isReplying={showInput}
+        // onReply={() => setShowInput(!showInput)}
+        // isReplying={showInput}
+        isReply
       />
-      {showInput && <CommentInput reply replyToId={comment.id} />}
+      {/* {showInput && <CommentInput reply replyToId={comment.id} />} */}
     </div>
   )
 }

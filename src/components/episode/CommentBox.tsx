@@ -1,4 +1,5 @@
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
+import { trpc } from '../../utils/trpc'
 
 interface props {
   comment: {
@@ -8,13 +9,16 @@ interface props {
   }
   onReply?: () => void
   isReplying?: boolean
+  isReply?: boolean
 }
 
 export default function CommentBox({
   comment,
   onReply,
   isReplying = false,
+  isReply = false,
 }: props) {
+  const addLike = trpc.interactions.addLike.useMutation()
   return (
     <div className="flex w-full flex-col space-y-1">
       <div className="flex flex-row space-x-2">
@@ -28,12 +32,22 @@ export default function CommentBox({
       </div>
       {/* BOTTOM ACTIONS */}
       <div className="flex flex-row items-center space-x-2 text-zinc-500/80 dark:text-zinc-400">
-        <button className="appearance-none py-1 text-sm">
+        <button
+          className="appearance-none py-1 text-sm"
+          onClick={() =>
+            addLike.mutate({ userId: '6969', commentId: comment.id })
+          }
+        >
           {true ? <FaRegHeart /> : <FaHeart className="text-red-500" />}
         </button>
-        <button className="appearance-none text-xs font-bold" onClick={onReply}>
-          {isReplying ? 'Cancel' : 'Reply'}
-        </button>
+        {!isReply && (
+          <button
+            className="appearance-none text-xs font-bold"
+            onClick={onReply}
+          >
+            {isReplying ? 'Cancel' : 'Reply'}
+          </button>
+        )}
         <button className="appearance-none text-xs font-bold">Report</button>
       </div>
     </div>
