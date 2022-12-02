@@ -83,7 +83,7 @@ export default function Home() {
           {/* COMMENTS */}
           <div className="flex w-full flex-col space-y-4">
             {episode.data.comments?.map((comment) => (
-              <WholeComment comment={comment} />
+              <WholeComment key={comment.id} comment={comment} />
             ))}
           </div>
         </div>
