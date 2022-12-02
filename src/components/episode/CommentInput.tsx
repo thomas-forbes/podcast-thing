@@ -1,5 +1,6 @@
 // @ts-expect-error the lib is not typed
 import MicRecorder from 'mic-recorder-to-mp3'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import {
@@ -12,10 +13,16 @@ import {
 import TextareaAutosize from 'react-textarea-autosize'
 import { trpc } from '../../utils/trpc'
 
+interface props {
+  reply?: boolean
+  replyToId?: string
+}
+
 const Mp3Recorder = new MicRecorder({ bitRate: 128 })
-export default function CommentInput() {
-  const { query } = useRouter()
+export default function CommentInput({ reply = false, replyToId }: props) {
+  const router = useRouter()
   const addComment = trpc.interactions.addComment.useMutation()
+  const { data: session } = useSession()
 
   const [commentText, setCommentText] = useState('')
   const [isRecording, setIsRecording] = useState(false)
@@ -28,15 +35,14 @@ export default function CommentInput() {
   const stopRecording = async () => {
     Mp3Recorder.stop()
       .getMp3()
-      .then(([_, blob]: [any, Blob]) => {
+      .then(([_, blob]: [Buffer, Blob]) => {
         setRecURL(URL.createObjectURL(blob))
         setIsRecording(false)
       })
       .catch((e: Error) => console.log(e))
   }
-  ;('clawmhfv90004wu1mlr32a23o')
   return (
-    <div className="w-full">
+    <div className={`w-full ${reply && 'ml-4'}`}>
       {/* {recURL && <audio src={recURL} controls />} */}
       {/* RECORD / STOP */}
       <button
@@ -59,28 +65,35 @@ export default function CommentInput() {
         <VoiceWave src={recURL || ''} trash={() => setRecURL(null)} />
       ) : (
         <TextareaAutosize
-          className="w-full resize-none appearance-none border-x border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors placeholder:text-zinc-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500"
+          className="w-full resize-none appearance-none border-x border-zinc-900/10 bg-white p-3 shadow-md shadow-zinc-800/5 transition-colors placeholder:text-zinc-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500"
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
           placeholder="Comment..."
-          minRows={3}
+          minRows={reply ? 1 : 3}
         />
       )}
+      {/* TODO: save user text while they sign up maybe save in url param */}
       <button
-        onClick={() =>
-          addComment.mutate({
-            episodeSlug: (query.episodeSlug as string) ?? '',
-            text: commentText,
-            userId: '6969',
-          })
+        onClick={
+          session?.user
+            ? () =>
+                addComment.mutate({
+                  episodeSlug: (router.query.episodeSlug as string) ?? '',
+                  podcastSlug: (router.query.podcastSlug as string) ?? '',
+                  text: commentText,
+                  ...(reply && { replyToId }),
+                })
+            : () => router.push('/login')
         }
-        className="-mt-1 w-full rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition hover:bg-zinc-400 active:bg-zinc-500 active:text-zinc-100/80 active:transition-none dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70"
+        disabled={commentText.length === 0}
+        className="-mt-1 w-full rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition enabled:hover:bg-zinc-400 enabled:active:bg-zinc-500 enabled:active:text-zinc-100/80 enabled:active:transition-none disabled:opacity-60 dark:bg-zinc-700 enabled:dark:hover:bg-zinc-600 enabled:dark:active:bg-zinc-700 enabled:dark:active:text-zinc-100/70"
       >
-        Comment
+        {reply ? 'Reply' : 'Comment'}
       </button>
     </div>
   )
 }
+
 const VoiceWave = ({ src, trash }: { src: string; trash: () => void }) => {
   const [wavesurfer, setWavesurfer] = useState<WaveSurfer | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
