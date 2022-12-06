@@ -19,8 +19,8 @@ export default function Home() {
   const {
     data: episode,
     isLoading,
-    isError,
     error,
+    refetch,
   } = trpc.podcast.getEpisode.useQuery(
     {
       showSlug: showSlug as string,
@@ -85,7 +85,7 @@ export default function Home() {
           {/* HEADING */}
           <h2 className="text-xl font-bold">Comments</h2>
           {/* INPUT */}
-          <CommentInput episodeId={episode.data.id ?? ''} />
+          <CommentInput episodeId={episode.data.id ?? ''} refetch={refetch} />
           {/* COMMENTS */}
           <div className="flex w-full flex-col space-y-4">
             {episode.data.comments
@@ -99,6 +99,7 @@ export default function Home() {
                   key={comment.id}
                   episodeId={episode.data.id ?? ''}
                   comment={comment}
+                  refetch={refetch}
                 />
               ))}
           </div>

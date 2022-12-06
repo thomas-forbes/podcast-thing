@@ -18,6 +18,7 @@ interface props {
   reply?: boolean
   replyToId?: string
   episodeId: string
+  refetch: () => void
 }
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 })
@@ -25,6 +26,7 @@ export default function CommentInput({
   reply = false,
   replyToId,
   episodeId,
+  refetch,
 }: props) {
   const router = useRouter()
   const addComment = trpc.interactions.addComment.useMutation()
@@ -88,21 +90,22 @@ export default function CommentInput({
       <button
         onClick={
           session?.user
-            ? () => {
-                addComment.mutate({
+            ? async () => {
+                await addComment.mutateAsync({
                   episodeSlug: (router.query.episodeSlug as string) ?? '',
                   podcastSlug: (router.query.podcastSlug as string) ?? '',
                   text: commentText,
                   ...(reply && { replyToId }),
                 })
+                refetch()
                 deleteCookie()
               }
             : () => signIn()
         }
-        disabled={commentText.length === 0}
-        className="-mt-1 w-full rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition enabled:hover:bg-zinc-400 enabled:active:bg-zinc-500 enabled:active:text-zinc-100/80 enabled:active:transition-none disabled:opacity-60 dark:bg-zinc-700 enabled:dark:hover:bg-zinc-600 enabled:dark:active:bg-zinc-700 enabled:dark:active:text-zinc-100/70"
+        disabled={commentText.length === 0 || addComment.isLoading}
+        className="-mt-1 flex w-full items-center justify-center rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition enabled:hover:bg-zinc-400 enabled:active:bg-zinc-500 enabled:active:text-zinc-100/80 enabled:active:transition-none disabled:opacity-60 dark:bg-zinc-700 enabled:dark:hover:bg-zinc-600 enabled:dark:active:bg-zinc-700 enabled:dark:active:text-zinc-100/70"
       >
-        {reply ? 'Reply' : 'Comment'}
+        {addComment.isLoading ? <Spinner /> : reply ? 'Reply' : 'Comment'}
       </button>
     </div>
   )
@@ -172,3 +175,26 @@ const VoiceWave = ({ src, trash }: { src: string; trash: () => void }) => {
     </div>
   )
 }
+
+const Spinner = () => (
+  <svg
+    className="h-5 w-5 animate-spin text-white"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+  >
+    <circle
+      className="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      stroke-width="4"
+    ></circle>
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+    ></path>
+  </svg>
+)
