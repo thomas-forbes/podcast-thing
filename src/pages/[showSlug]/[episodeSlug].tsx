@@ -82,9 +82,15 @@ export default function Home() {
           <CommentInput episodeId={episode.data.id ?? ''} />
           {/* COMMENTS */}
           <div className="flex w-full flex-col space-y-4">
-            {episode.data.comments?.map((comment) => (
-              <WholeComment key={comment.id} comment={comment} />
-            ))}
+            {episode.data.comments
+              ?.sort(
+                (a, b) =>
+                  new Date(a.createdAt).getTime() -
+                  new Date(b.createdAt).getTime()
+              )
+              ?.map((comment) => (
+                <WholeComment key={comment.id} comment={comment} />
+              ))}
           </div>
         </div>
       </Background>
