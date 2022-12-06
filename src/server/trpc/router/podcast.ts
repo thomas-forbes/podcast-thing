@@ -52,7 +52,6 @@ export const podcastRouter = router({
           episodes: true,
         },
       })
-      console.log(show)
       return show
     }),
   addShow: publicProcedure

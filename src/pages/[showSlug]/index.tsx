@@ -1,3 +1,5 @@
+import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Background from '../../components/Background'
 import Loading from '../../components/Loading'
@@ -27,20 +29,27 @@ export default function Show() {
       </div>
       {/* EPISODES */}
       <h2 className="text-xl font-bold">Episodes:</h2>
-      <div className="flex flex-col items-stretch space-y-4">
+      <div className="flex flex-col items-stretch">
         {show.episodes.map((episode) => (
-          <div
+          <Link
             key={episode.title}
-            className="flex flex-row items-center space-x-4"
+            href={`/${showSlug}/${episode.slug}`}
+            className="flex flex-row items-center space-x-4 py-4 px-2"
           >
-            <div className="relative h-16 w-16 overflow-hidden rounded-md shadow-xl shadow-slate-800">
-              <img src={show.imageUrl ?? ''} alt="Podcast Image" />
-            </div>
+            <Image
+              src={show.imageUrl ?? ''}
+              alt="Podcast Image"
+              width={64}
+              height={64}
+              className="flex-shrink-0 overflow-hidden rounded-md shadow-xl shadow-slate-800"
+            />
             <div className="flex flex-col">
-              <h3 className="text-xl font-bold">{episode.title}</h3>
-              <p className="text-sm">{episode.description}</p>
+              <h3 className="text-lg font-bold leading-6">{episode.title}</h3>
+              <p className="text-sm leading-6 dark:text-slate-200">
+                {episode.description}
+              </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </Background>

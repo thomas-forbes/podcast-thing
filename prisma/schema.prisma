@@ -41,6 +41,7 @@ model Episode {
   slug        String    @unique @db.VarChar(255)
   title       String    @db.VarChar(255)
   description String?   @db.Text
+  imageUrl    String?   @db.VarChar(255)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   showId      String
