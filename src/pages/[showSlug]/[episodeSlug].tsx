@@ -79,7 +79,7 @@ export default function Home() {
           {/* HEADING */}
           <h2 className="text-xl font-bold">Comments</h2>
           {/* INPUT */}
-          <CommentInput />
+          <CommentInput episodeId={episode.data.id ?? ''} />
           {/* COMMENTS */}
           <div className="flex w-full flex-col space-y-4">
             {episode.data.comments?.map((comment) => (

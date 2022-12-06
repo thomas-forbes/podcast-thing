@@ -27,6 +27,7 @@ export const podcastRouter = router({
         return {
           error: false,
           data: {
+            id: episode.id,
             title: episode.title,
             description: episode.description,
             imgUrl: show.imageUrl,
