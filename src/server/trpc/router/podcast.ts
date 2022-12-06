@@ -7,40 +7,30 @@ export const podcastRouter = router({
   getEpisode: publicProcedure
     .input(z.object({ showSlug: z.string(), episodeSlug: z.string() }))
     .query(async ({ ctx, input }) => {
-      try {
-        const show = await ctx.prisma.show.findUnique({
-          where: { slug: input.showSlug },
-        })
-        if (!show) throw new Error('Show not found')
+      const show = await ctx.prisma.show.findUnique({
+        where: { slug: input.showSlug },
+      })
+      if (!show) throw new Error('Show not found')
 
-        const episode = await ctx.prisma.episode.findUnique({
-          where: { slug: input.episodeSlug },
-          include: {
-            comments: {
-              include: { user: true, replies: { include: { user: true } } },
-            },
+      const episode = await ctx.prisma.episode.findUnique({
+        where: { slug: input.episodeSlug },
+        include: {
+          comments: {
+            include: { user: true, replies: { include: { user: true } } },
           },
-        })
-        if (!episode) throw new Error('Episode not found')
-        console.log(episode)
+        },
+      })
+      if (!episode) throw new Error('Episode not found')
+      console.log(episode)
 
-        return {
-          error: false,
-          data: {
-            id: episode.id,
-            title: episode.title,
-            description: episode.description,
-            imgUrl: show.imageUrl,
-            comments: episode.comments.filter((c) => !c.replyToId),
-          },
-        }
-      } catch (e) {
-        console.error(e)
-        return {
-          error: true,
-          message: e instanceof Error ? e.message : 'Error',
-          data: {},
-        }
+      return {
+        data: {
+          id: episode.id,
+          title: episode.title,
+          description: episode.description,
+          imgUrl: show.imageUrl,
+          comments: episode.comments.filter((c) => !c.replyToId),
+        },
       }
     }),
   getShow: publicProcedure
@@ -52,6 +42,7 @@ export const podcastRouter = router({
           episodes: true,
         },
       })
+      if (!show) throw new Error('Show not found')
       return show
     }),
   addShow: publicProcedure

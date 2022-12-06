@@ -1,5 +1,4 @@
 import { Comment, User } from '@prisma/client'
-import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import { trpc } from '../../utils/trpc'
@@ -20,8 +19,6 @@ export default function CommentBox({
   isReply = false,
 }: props) {
   const addLike = trpc.interactions.addLike.useMutation()
-
-  const { data: session } = useSession()
   return (
     <div className="flex w-full flex-col space-y-1">
       <div className="flex flex-row space-x-2">

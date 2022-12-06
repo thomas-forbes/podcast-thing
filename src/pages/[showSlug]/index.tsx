@@ -8,12 +8,18 @@ import { trpc } from '../../utils/trpc'
 export default function Show() {
   const router = useRouter()
   const { showSlug } = router.query
-  const { data: show, isLoading } = trpc.podcast.getShow.useQuery(
+  const {
+    data: show,
+    isLoading,
+    error,
+  } = trpc.podcast.getShow.useQuery(
     {
       showSlug: showSlug as string,
     },
-    { enabled: typeof showSlug == 'string' }
+    { enabled: typeof showSlug == 'string', retry: 1 }
   )
+
+  if (error?.message == 'Show not found') router.push('/')
   if (!router.isReady || isLoading || show == undefined) return <Loading />
   return (
     <Background mainColumn>
@@ -30,27 +36,32 @@ export default function Show() {
       {/* EPISODES */}
       <h2 className="text-xl font-bold">Episodes:</h2>
       <div className="flex flex-col items-stretch">
-        {show.episodes.map((episode) => (
-          <Link
-            key={episode.title}
-            href={`/${showSlug}/${episode.slug}`}
-            className="flex flex-row items-center space-x-4 py-4 px-2"
-          >
-            <Image
-              src={show.imageUrl ?? ''}
-              alt="Podcast Image"
-              width={64}
-              height={64}
-              className="flex-shrink-0 overflow-hidden rounded-md shadow-xl shadow-slate-800"
-            />
-            <div className="flex flex-col">
-              <h3 className="text-lg font-bold leading-6">{episode.title}</h3>
-              <p className="text-sm leading-6 dark:text-slate-200">
-                {episode.description}
-              </p>
-            </div>
-          </Link>
-        ))}
+        {show.episodes
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .map((episode) => (
+            <Link
+              key={episode.title}
+              href={`/${showSlug}/${episode.slug}`}
+              className="flex flex-row items-center space-x-4 py-4 px-2"
+            >
+              <Image
+                src={show.imageUrl ?? ''}
+                alt="Podcast Image"
+                width={64}
+                height={64}
+                className="flex-shrink-0 overflow-hidden rounded-md shadow-xl shadow-slate-800"
+              />
+              <div className="flex flex-col">
+                <h3 className="text-lg font-bold leading-6">{episode.title}</h3>
+                <p className="text-sm leading-6 dark:text-slate-200">
+                  {episode.description}
+                </p>
+              </div>
+            </Link>
+          ))}
       </div>
     </Background>
   )

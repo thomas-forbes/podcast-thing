@@ -16,12 +16,20 @@ export default function Home() {
   const router = useRouter()
   const { showSlug, episodeSlug } = router.query
 
-  const { data: episode, isLoading } = trpc.podcast.getEpisode.useQuery(
+  const {
+    data: episode,
+    isLoading,
+    isError,
+    error,
+  } = trpc.podcast.getEpisode.useQuery(
     {
       showSlug: showSlug as string,
       episodeSlug: episodeSlug as string,
     },
-    { enabled: typeof showSlug == 'string' && typeof episodeSlug == 'string' }
+    {
+      enabled: typeof showSlug == 'string' && typeof episodeSlug == 'string',
+      retry: 1,
+    }
   )
 
   const [ratings, setRatings] = useState<RatingType[]>([
@@ -29,6 +37,9 @@ export default function Home() {
     { label: 'Content', rating: -1 },
     { label: 'Production', rating: -1 },
   ])
+
+  if (error?.message == 'Episode not found') router.push(`/${showSlug}`)
+  else if (error?.message == 'Show not found') router.push('/')
 
   if (!router.isReady || isLoading || episode == undefined) return <Loading />
   return (
