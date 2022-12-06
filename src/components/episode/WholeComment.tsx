@@ -11,10 +11,9 @@ interface props {
     })[]
   }
   episodeId: string
-  refetch: () => void
 }
 
-export default function WholeComment({ comment, episodeId, refetch }: props) {
+export default function WholeComment({ comment, episodeId }: props) {
   const [showInput, setShowInput] = useState(false)
   return (
     <div
@@ -29,12 +28,7 @@ export default function WholeComment({ comment, episodeId, refetch }: props) {
           isReplying={showInput}
         />
         {showInput && (
-          <CommentInput
-            episodeId={episodeId}
-            reply
-            replyToId={comment.id}
-            refetch={refetch}
-          />
+          <CommentInput episodeId={episodeId} reply replyToId={comment.id} />
         )}
       </div>
       {/* REPLIES */}
