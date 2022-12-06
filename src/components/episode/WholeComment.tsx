@@ -32,11 +32,13 @@ export default function WholeComment({ comment, episodeId }: props) {
         )}
       </div>
       {/* REPLIES */}
-      <div className="ml-2 flex flex-col space-y-4 border-l-2 pl-3 dark:border-zinc-700">
-        {comment.replies.map((reply) => (
-          <Reply key={'reply:' + reply.id} comment={reply} />
-        ))}
-      </div>
+      {comment.replies.length ? (
+        <div className="ml-2 flex flex-col space-y-4 border-l-2 pl-3 dark:border-zinc-700">
+          {comment.replies.map((reply) => (
+            <Reply key={'reply:' + reply.id} comment={reply} />
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }

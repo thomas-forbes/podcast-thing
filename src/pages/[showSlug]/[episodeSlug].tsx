@@ -89,12 +89,12 @@ export default function Home() {
           {/* COMMENTS */}
           <div className="flex w-full flex-col space-y-4">
             {episode.data.comments
-              ?.sort(
+              .sort(
                 (a, b) =>
                   new Date(a.createdAt).getTime() -
                   new Date(b.createdAt).getTime()
               )
-              ?.map((comment) => (
+              .map((comment) => (
                 <WholeComment
                   key={comment.id}
                   episodeId={episode.data.id ?? ''}

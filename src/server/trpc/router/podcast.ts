@@ -42,9 +42,15 @@ export const podcastRouter = router({
           episodes: true,
         },
       })
+      console.log(show)
       if (!show) throw new Error('Show not found')
       return show
     }),
+  getShows: publicProcedure.query(async ({ ctx }) => {
+    // TODO: limit
+    const shows = await ctx.prisma.show.findMany()
+    return shows
+  }),
   addShow: publicProcedure
     .input(z.object({ rssLink: z.string(), slug: z.string() }))
     .mutation(async ({ ctx, input }) => {
