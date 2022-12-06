@@ -43,9 +43,18 @@ export const podcastRouter = router({
         }
       }
     }),
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    return { test: await ctx.prisma.show.findMany() }
-  }),
+  getShow: publicProcedure
+    .input(z.object({ showSlug: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const show = await ctx.prisma.show.findUnique({
+        where: { slug: input.showSlug },
+        include: {
+          episodes: true,
+        },
+      })
+      console.log(show)
+      return show
+    }),
   addShow: publicProcedure
     .input(z.object({ rssLink: z.string(), slug: z.string() }))
     .mutation(async ({ ctx, input }) => {

@@ -10,9 +10,10 @@ interface props {
       user: User
     })[]
   }
+  episodeId: string
 }
 
-export default function WholeComment({ comment }: props) {
+export default function WholeComment({ comment, episodeId }: props) {
   const [showInput, setShowInput] = useState(false)
   return (
     <div
@@ -26,7 +27,9 @@ export default function WholeComment({ comment }: props) {
           onReply={() => setShowInput(!showInput)}
           isReplying={showInput}
         />
-        {showInput && <CommentInput reply replyToId={comment.id} />}
+        {showInput && (
+          <CommentInput episodeId={episodeId} reply replyToId={comment.id} />
+        )}
       </div>
       {/* REPLIES */}
       <div className="ml-2 flex flex-col space-y-4 border-l-2 pl-3 dark:border-zinc-700">

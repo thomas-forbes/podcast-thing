@@ -4,18 +4,13 @@ import { AiFillStar, AiOutlineStar } from 'react-icons/ai'
 import Background from '../../components/Background'
 import CommentInput from '../../components/episode/CommentInput'
 import WholeComment from '../../components/episode/WholeComment'
+import Loading from '../../components/Loading'
 import { trpc } from '../../utils/trpc'
 
 interface RatingType {
   label: string
   rating: number
 }
-
-const Loading = () => (
-  <div className="flex min-h-screen items-center justify-center">
-    <div className="text-2xl font-bold">Loading...</div>
-  </div>
-)
 
 export default function Home() {
   const router = useRouter()
@@ -42,8 +37,8 @@ export default function Home() {
         {/* IMAGE */}
         <div className="relative h-32 w-32 overflow-hidden rounded-md shadow-xl shadow-slate-800">
           <img src={episode.data.imgUrl ?? ''} alt="Podcast Image" />
-          {/* TEXT */}
         </div>
+        {/* TEXT */}
         <div className="flex w-full flex-col items-center space-y-4">
           <h1 className="text-center text-2xl font-extrabold">
             {episode.data.title}
@@ -89,7 +84,11 @@ export default function Home() {
                   new Date(b.createdAt).getTime()
               )
               ?.map((comment) => (
-                <WholeComment key={comment.id} comment={comment} />
+                <WholeComment
+                  key={comment.id}
+                  episodeId={episode.data.id ?? ''}
+                  comment={comment}
+                />
               ))}
           </div>
         </div>
