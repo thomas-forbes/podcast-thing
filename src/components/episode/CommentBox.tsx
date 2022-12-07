@@ -1,5 +1,5 @@
 import { Comment, User } from '@prisma/client'
-import { useSession } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useContext, useState } from 'react'
 import { FaHeart, FaRegHeart, FaUserCircle } from 'react-icons/fa'
@@ -59,13 +59,17 @@ export default function CommentBox({
       <div className="ml-[2px] flex flex-row items-center space-x-2 text-zinc-500/80 dark:text-zinc-400">
         <button
           className="appearance-none py-1 text-sm"
-          onClick={async () => {
-            setLiked(!liked)
-            addLike.mutate({
-              commentId: comment.id,
-              add: !liked,
-            })
-          }}
+          onClick={
+            session?.user
+              ? () => {
+                  setLiked(!liked)
+                  addLike.mutate({
+                    commentId: comment.id,
+                    add: !liked,
+                  })
+                }
+              : () => signIn()
+          }
         >
           {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
         </button>
