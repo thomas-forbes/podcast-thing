@@ -21,15 +21,27 @@ export const podcastRouter = router({
         },
       })
       if (!episode) throw new Error('Episode not found')
-      console.log(episode)
+
+      // get the Ratings for the episode if the user
+      // is logged in
+      let ratings = undefined
+      if (ctx?.session?.user) {
+        ratings = await ctx.prisma.rating.findMany({
+          where: {
+            userId: ctx.session.user.id,
+            episodeId: episode.id,
+          },
+        })
+      }
 
       return {
         data: {
           id: episode.id,
           title: episode.title,
           description: episode.description,
-          imgUrl: show.imageUrl,
+          imageUrl: show.imageUrl,
           comments: episode.comments.filter((c) => !c.replyToId),
+          ratings,
         },
       }
     }),
@@ -42,7 +54,6 @@ export const podcastRouter = router({
           episodes: true,
         },
       })
-      console.log(show)
       if (!show) throw new Error('Show not found')
       return show
     }),

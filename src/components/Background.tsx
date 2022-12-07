@@ -8,7 +8,7 @@ interface props {
 
 export default function Background({ children, mainColumn, className }: props) {
   return (
-    <div className="flex min-h-screen flex-col items-center bg-white p-8 dark:bg-zinc-900">
+    <div className="flex min-h-screen flex-col items-center bg-white p-6 dark:bg-zinc-900">
       {mainColumn ? (
         <div
           className={twMerge(

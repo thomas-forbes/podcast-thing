@@ -47,6 +47,7 @@ model Episode {
   showId      String
   show        Show      @relation(fields: [showId], references: [id])
   comments    Comment[]
+  ratings     Rating[]
 
   @@index([slug])
   @@index([showId])
@@ -85,6 +86,22 @@ model Like {
   @@index([commentId])
 }
 
+model Rating {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  episodeId String
+  episode   Episode  @relation(fields: [episodeId], references: [id])
+  rating    Int
+  type      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, episodeId, type])
+  @@index([userId])
+  @@index([episodeId])
+}
+
 // ------------------------------------
 //      Necessary for Next auth
 // ------------------------------------
@@ -99,6 +116,7 @@ model User {
   sessions      Session[]
   comments      Comment[]
   likes         Like[]
+  ratings       Rating[]
 }
 
 model Account {

@@ -65,6 +65,41 @@ export const interactionRouter = router({
         }
       }
     }),
+  addRating: protectedProcedure
+    .input(
+      z.object({
+        episodeSlug: z.string(),
+        showSlug: z.string(),
+        rating: z.number().min(0).max(4),
+        type: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const episode = await ctx.prisma.episode.findUnique({
+        where: { slug: input.episodeSlug },
+      })
+      if (!episode) throw 'Episode not found'
+
+      await ctx.prisma.rating.delete({
+        where: {
+          userId_episodeId_type: {
+            userId: ctx.session.user.id,
+            episodeId: episode.id,
+            type: input.type,
+          },
+        },
+      })
+      const rating = await ctx.prisma.rating.create({
+        data: {
+          userId: ctx.session.user.id,
+          episodeId: episode.id,
+          rating: input.rating,
+          type: input.type,
+        },
+      })
+      console.log(rating)
+      return rating
+    }),
   deleteComment: protectedProcedure
     .input(z.object({ commentId: z.string() }))
     .mutation(async ({ ctx, input }) => {
