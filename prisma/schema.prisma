@@ -48,6 +48,7 @@ model Episode {
   show        Show      @relation(fields: [showId], references: [id])
   comments    Comment[]
   ratings     Rating[]
+  Like        Like[]
 
   @@index([slug])
   @@index([showId])
@@ -77,13 +78,17 @@ model Like {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+  episodeId String
+  episode   Episode  @relation(fields: [episodeId], references: [id])
   commentId String
   comment   Comment  @relation(fields: [commentId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([userId, commentId])
   @@index([userId])
   @@index([commentId])
+  @@index([episodeId])
 }
 
 model Rating {

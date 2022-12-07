@@ -37,7 +37,7 @@ export default function AddPodcast() {
             addEpisode.mutate({
               title,
               description,
-              showId: 'clawgppts0002wupu3az3tu97',
+              showId: 'clbdmdh7u000ewunc1sstglw1',
             })
           }
         >

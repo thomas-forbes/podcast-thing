@@ -24,15 +24,29 @@ export const podcastRouter = router({
 
       // get the Ratings for the episode if the user
       // is logged in
-      let ratings = undefined
-      if (ctx?.session?.user) {
-        ratings = await ctx.prisma.rating.findMany({
-          where: {
-            userId: ctx.session.user.id,
-            episodeId: episode.id,
-          },
-        })
-      }
+      const ratings = ctx?.session?.user
+        ? await ctx.prisma.rating.findMany({
+            where: {
+              userId: ctx.session.user.id,
+              episodeId: episode.id,
+            },
+          })
+        : undefined
+
+      const likes = ctx?.session?.user
+        ? await ctx.prisma.like.findMany({
+            where: {
+              AND: [
+                {
+                  userId: ctx.session.user.id,
+                },
+                {
+                  episodeId: episode.id,
+                },
+              ],
+            },
+          })
+        : undefined
 
       return {
         data: {
@@ -40,7 +54,16 @@ export const podcastRouter = router({
           title: episode.title,
           description: episode.description,
           imageUrl: show.imageUrl,
-          comments: episode.comments.filter((c) => !c.replyToId),
+          comments: episode.comments
+            .filter((c) => !c.replyToId)
+            .map((c) => ({
+              ...c,
+              isLiked: likes?.some((l) => l.commentId === c.id) ?? false,
+              replies: c.replies.map((r) => ({
+                ...r,
+                isLiked: likes?.some((l) => l.commentId === r.id) ?? false,
+              })),
+            })),
           ratings,
         },
       }

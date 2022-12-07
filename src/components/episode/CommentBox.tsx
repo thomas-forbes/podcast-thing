@@ -9,6 +9,10 @@ import { trpc } from '../../utils/trpc'
 interface props {
   comment: Comment & {
     user: User
+    // replies: (Comment & {
+    //   user: User
+    // })[]
+    isLiked: boolean
   }
   onReply?: () => void
   isReplying?: boolean
@@ -26,7 +30,9 @@ export default function CommentBox({
 
   const { refetch } = useContext(DataContext)
   const { data: session } = useSession()
+
   const [deleting, setDeleting] = useState(false)
+  const [liked, setLiked] = useState(comment.isLiked)
   return (
     <div className="flex w-full flex-col space-y-1">
       <div className="flex flex-row space-x-2">
@@ -53,9 +59,15 @@ export default function CommentBox({
       <div className="ml-[2px] flex flex-row items-center space-x-2 text-zinc-500/80 dark:text-zinc-400">
         <button
           className="appearance-none py-1 text-sm"
-          onClick={() => addLike.mutate({ commentId: comment.id })}
+          onClick={async () => {
+            setLiked(!liked)
+            addLike.mutate({
+              commentId: comment.id,
+              add: !liked,
+            })
+          }}
         >
-          {true ? <FaRegHeart /> : <FaHeart className="text-red-500" />}
+          {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
         </button>
         {!isReply && (
           <button
@@ -70,6 +82,7 @@ export default function CommentBox({
             className="appearance-none text-xs font-bold"
             onClick={async () => {
               setDeleting(true)
+              onReply && onReply()
               await deleteComment.mutateAsync({ commentId: comment.id })
               refetch()
             }}

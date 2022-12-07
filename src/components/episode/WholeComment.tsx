@@ -8,8 +8,11 @@ interface props {
     user: User
     replies: (Comment & {
       user: User
+      isLiked: boolean
     })[]
+    isLiked: boolean
   }
+
   episodeId: string
 }
 
@@ -48,6 +51,7 @@ const Reply = ({
 }: {
   comment: Comment & {
     user: User
+    isLiked: boolean
   }
 }) => {
   // const [showInput, setShowInput] = useState(false)

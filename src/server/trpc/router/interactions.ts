@@ -42,28 +42,33 @@ export const interactionRouter = router({
       }
     }),
   addLike: protectedProcedure
-    .input(z.object({ commentId: z.string() }))
+    .input(z.object({ commentId: z.string(), add: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
-      try {
-        const like = await ctx.prisma.like.create({
+      const comment = await ctx.prisma.comment.findUnique({
+        where: { id: input.commentId },
+        select: { episodeId: true },
+      })
+      if (!comment) throw 'Comment not found'
+
+      if (input.add) {
+        await ctx.prisma.like.create({
           data: {
             commentId: input.commentId,
+            episodeId: comment.episodeId,
             userId: ctx.session.user.id,
           },
         })
-
-        console.log(like)
-        return { error: false, data: like }
-      } catch (e) {
-        console.error(e)
-        return {
-          error: false,
-          message:
-            e instanceof Error
-              ? e.message
-              : 'There was an error creating your like',
-        }
+      } else {
+        await ctx.prisma.like.delete({
+          where: {
+            userId_commentId: {
+              userId: ctx.session.user.id,
+              commentId: input.commentId,
+            },
+          },
+        })
       }
+      // return
     }),
   addRating: protectedProcedure
     .input(
