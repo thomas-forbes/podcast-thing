@@ -8,11 +8,11 @@ import Loading from '../../components/Loading'
 import { trpc } from '../../utils/trpc'
 
 export const DataContext = React.createContext<{
-  refetch: () => void
+  refetch: () => Promise<any>
   isLoading: boolean
   isRefetching: boolean
 }>({
-  refetch: () => {},
+  refetch: async () => {},
   isLoading: true,
   isRefetching: false,
 })

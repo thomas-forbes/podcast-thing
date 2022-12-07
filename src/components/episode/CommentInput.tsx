@@ -20,6 +20,7 @@ interface props {
   reply?: boolean
   replyToId?: string
   episodeId: string
+  onFinish?: () => void
 }
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 })
@@ -27,6 +28,7 @@ export default function CommentInput({
   reply = false,
   replyToId,
   episodeId,
+  onFinish,
 }: props) {
   const router = useRouter()
   const addComment = trpc.interactions.addComment.useMutation()
@@ -38,6 +40,7 @@ export default function CommentInput({
   const [commentText, setCommentText] = useState<string>(commentCookie || '')
   const [isRecording, setIsRecording] = useState(false)
   const [recURL, setRecURL] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const { refetch } = useContext(DataContext)
 
@@ -93,22 +96,26 @@ export default function CommentInput({
         onClick={
           session?.user
             ? async () => {
+                setIsLoading(true)
                 await addComment.mutateAsync({
                   episodeSlug: (router.query.episodeSlug as string) ?? '',
                   podcastSlug: (router.query.podcastSlug as string) ?? '',
                   text: commentText,
                   ...(reply && { replyToId }),
                 })
-                refetch()
+                await refetch()
+
+                setIsLoading(false)
                 setCommentText('')
                 deleteCookie()
+                onFinish && onFinish()
               }
             : () => signIn()
         }
-        disabled={commentText.length === 0 || addComment.isLoading}
+        disabled={commentText.length === 0 || isLoading}
         className="-mt-1 flex w-full items-center justify-center rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition enabled:hover:bg-zinc-400 enabled:active:bg-zinc-500 enabled:active:text-zinc-100/80 enabled:active:transition-none disabled:opacity-60 dark:bg-zinc-700 enabled:dark:hover:bg-zinc-600 enabled:dark:active:bg-zinc-700 enabled:dark:active:text-zinc-100/70"
       >
-        {addComment.isLoading ? <Spinner /> : reply ? 'Reply' : 'Comment'}
+        {isLoading ? <Spinner /> : reply ? 'Reply' : 'Comment'}
       </button>
     </div>
   )

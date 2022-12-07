@@ -1,7 +1,7 @@
 import { Comment, User } from '@prisma/client'
 import { signIn, useSession } from 'next-auth/react'
 import Image from 'next/image'
-import { useContext, useState } from 'react'
+import { Dispatch, SetStateAction, useContext, useState } from 'react'
 import { FaHeart, FaRegHeart, FaUserCircle } from 'react-icons/fa'
 import { DataContext } from '../../pages/[showSlug]/[episodeSlug]'
 import { trpc } from '../../utils/trpc'
@@ -14,14 +14,14 @@ interface props {
     // })[]
     isLiked: boolean
   }
-  onReply?: () => void
+  setShowInput?: Dispatch<SetStateAction<boolean>>
   isReplying?: boolean
   isReply?: boolean
 }
 
 export default function CommentBox({
   comment,
-  onReply,
+  setShowInput,
   isReplying = false,
   isReply = false,
 }: props) {
@@ -76,7 +76,9 @@ export default function CommentBox({
         {!isReply && (
           <button
             className="appearance-none text-xs font-bold"
-            onClick={onReply}
+            onClick={() =>
+              setShowInput && setShowInput((showInput) => !showInput)
+            }
           >
             {isReplying ? 'Cancel' : 'Reply'}
           </button>
@@ -86,7 +88,7 @@ export default function CommentBox({
             className="appearance-none text-xs font-bold"
             onClick={async () => {
               setDeleting(true)
-              onReply && onReply()
+              setShowInput && setShowInput(false)
               await deleteComment.mutateAsync({ commentId: comment.id })
               refetch()
             }}

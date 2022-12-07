@@ -27,11 +27,16 @@ export default function WholeComment({ comment, episodeId }: props) {
       <div className="space-y-2">
         <CommentBox
           comment={comment}
-          onReply={() => setShowInput(!showInput)}
+          setShowInput={setShowInput}
           isReplying={showInput}
         />
         {showInput && (
-          <CommentInput episodeId={episodeId} reply replyToId={comment.id} />
+          <CommentInput
+            episodeId={episodeId}
+            reply
+            replyToId={comment.id}
+            onFinish={() => setShowInput(false)}
+          />
         )}
       </div>
       {/* REPLIES */}
@@ -59,7 +64,6 @@ const Reply = ({
     <div className="space-y-2">
       <CommentBox
         comment={comment}
-        // onReply={() => setShowInput(!showInput)}
         // isReplying={showInput}
         isReply
       />
