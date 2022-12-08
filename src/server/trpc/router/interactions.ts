@@ -85,15 +85,17 @@ export const interactionRouter = router({
       })
       if (!episode) throw 'Episode not found'
 
-      await ctx.prisma.rating.delete({
-        where: {
-          userId_episodeId_type: {
-            userId: ctx.session.user.id,
-            episodeId: episode.id,
-            type: input.type,
+      try {
+        await ctx.prisma.rating.delete({
+          where: {
+            userId_episodeId_type: {
+              userId: ctx.session.user.id,
+              episodeId: episode.id,
+              type: input.type,
+            },
           },
-        },
-      })
+        })
+      } catch (e) {}
       const rating = await ctx.prisma.rating.create({
         data: {
           userId: ctx.session.user.id,
