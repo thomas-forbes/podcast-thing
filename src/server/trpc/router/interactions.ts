@@ -51,6 +51,10 @@ export const interactionRouter = router({
             userId: ctx.session.user.id,
           },
         })
+        await ctx.prisma.comment.update({
+          where: { id: input.commentId },
+          data: { likesNum: { increment: 1 } },
+        })
       } else {
         await ctx.prisma.like.delete({
           where: {
@@ -60,8 +64,12 @@ export const interactionRouter = router({
             },
           },
         })
+        await ctx.prisma.comment.update({
+          where: { id: input.commentId },
+          data: { likesNum: { decrement: 1 } },
+        })
       }
-      // return
+      return
     }),
   addRating: protectedProcedure
     .input(
