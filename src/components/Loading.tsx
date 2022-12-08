@@ -1,7 +1,9 @@
+import Spinner from './Spinner'
+
 export default function Loading() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="text-2xl font-bold">Loading...</div>
+      <Spinner size={10} />
     </div>
   )
 }

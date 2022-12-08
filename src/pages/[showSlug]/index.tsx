@@ -24,9 +24,13 @@ export default function Show() {
   return (
     <Background mainColumn>
       {/* IMAGE */}
-      <div className="relative h-32 w-32 overflow-hidden rounded-md shadow-xl shadow-slate-800">
-        <img src={show.imageUrl ?? ''} alt="Podcast Image" />
-      </div>
+      <Image
+        src={show.imageUrl}
+        alt="Podcast Image"
+        width={128}
+        height={128}
+        className="overflow-hidden rounded-md shadow-xl shadow-slate-800"
+      />
       {/* TEXT */}
       <div className="flex w-full flex-col items-center space-y-4">
         <h1 className="text-center text-4xl font-extrabold">{show.title}</h1>

@@ -1,4 +1,3 @@
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import Parser from 'rss-parser'
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
@@ -13,7 +12,7 @@ export const podcastRouter = router({
       if (!show) throw new Error('Show not found')
 
       const episode = await ctx.prisma.episode.findUnique({
-        where: { slug: input.episodeSlug },
+        where: { showId_slug: { showId: show.id, slug: input.episodeSlug } },
         include: {
           comments: {
             include: { user: true, replies: { include: { user: true } } },
@@ -49,23 +48,21 @@ export const podcastRouter = router({
         : undefined
 
       return {
-        data: {
-          id: episode.id,
-          title: episode.title,
-          description: episode.description,
-          imageUrl: show.imageUrl,
-          comments: episode.comments
-            .filter((c) => !c.replyToId)
-            .map((c) => ({
-              ...c,
-              isLiked: likes?.some((l) => l.commentId === c.id) ?? false,
-              replies: c.replies.map((r) => ({
-                ...r,
-                isLiked: likes?.some((l) => l.commentId === r.id) ?? false,
-              })),
+        id: episode.id,
+        title: episode.title,
+        description: episode.description,
+        imageUrl: show.imageUrl,
+        comments: episode.comments
+          .filter((c) => !c.replyToId)
+          .map((c) => ({
+            ...c,
+            isLiked: likes?.some((l) => l.commentId === c.id) ?? false,
+            replies: c.replies.map((r) => ({
+              ...r,
+              isLiked: likes?.some((l) => l.commentId === r.id) ?? false,
             })),
-          ratings,
-        },
+          })),
+        ratings,
       }
     }),
   getShow: publicProcedure
@@ -89,19 +86,11 @@ export const podcastRouter = router({
     .input(z.object({ rssLink: z.string(), slug: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const parser = new Parser()
-      try {
-        const feed = await parser.parseURL(input.rssLink)
+      const feed = await parser.parseURL(input.rssLink)
 
-        // TODO: validate slug
-        const show = {
-          slug: input.slug,
-          title: feed?.title,
-          description: feed?.description,
-          link: feed?.link,
-          feedUrl: feed?.feedUrl,
-          imageUrl: feed?.image?.url,
-        }
-        const showSchema = z.object({
+      // TODO: validate slug
+      const show = z
+        .object({
           slug: z.string(),
           title: z.string(),
           description: z.string(),
@@ -109,22 +98,19 @@ export const podcastRouter = router({
           feedUrl: z.string(),
           imageUrl: z.string(),
         })
-        showSchema.parse(show)
-
-        await ctx.prisma.show.create({
-          data: show as z.infer<typeof showSchema>,
+        .parse({
+          slug: input.slug,
+          title: feed?.title,
+          description: feed?.description,
+          link: feed?.link,
+          feedUrl: feed?.feedUrl,
+          imageUrl: feed?.image?.url,
         })
-        return show as z.infer<typeof showSchema>
-      } catch (e) {
-        console.error(e)
-        return {
-          error: true,
-          message:
-            e instanceof PrismaClientKnownRequestError && e.code == 'P2002'
-              ? 'A show with that title already exists'
-              : 'There was a problem getting data please email me',
-        }
-      }
+
+      await ctx.prisma.show.create({
+        data: show,
+      })
+      return show
     }),
   addEpisode: publicProcedure
     .input(
@@ -135,23 +121,15 @@ export const podcastRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      try {
-        const slug = input.title
-          .toLowerCase()
-          .replace(/ /g, '-')
-          .replace(/[^\w-]+/g, '')
+      const slug = input.title
+        .toLowerCase()
+        .replace(/ /g, '-')
+        .replace(/[^\w-]+/g, '')
 
-        // TODO: make sure showId is valid
-        await ctx.prisma.episode.create({
-          data: { ...input, slug },
-        })
-        return { error: false }
-      } catch (e) {
-        console.error(e)
-        return {
-          error: true,
-          message: 'There was a problem adding the episode',
-        }
-      }
+      // TODO: make sure showId is valid
+      const episode = await ctx.prisma.episode.create({
+        data: { ...input, slug },
+      })
+      return episode
     }),
 })

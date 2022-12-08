@@ -12,34 +12,27 @@ export const interactionRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      try {
-        // TODO: implement podcastSlug and make episode slug not unique.
-        // make unique pair episode slug and podcastId
-        const episode = await ctx.prisma.episode.findUnique({
-          where: { slug: input.episodeSlug },
-        })
-        if (!episode) throw 'Episode not found'
+      // TODO: implement podcastSlug and make episode slug not unique.
+      // make unique pair episode slug and podcastId
+      const show = await ctx.prisma.show.findUnique({
+        where: { slug: input.podcastSlug },
+      })
+      if (!show) throw 'Show not found'
 
-        const comment = await ctx.prisma.comment.create({
-          data: {
-            userId: ctx.session.user.id,
-            episodeId: episode.id,
-            text: input.text,
-            replyToId: input.replyToId,
-          },
-        })
-        console.log(comment)
-        return { error: false, data: comment }
-      } catch (e) {
-        console.error(e)
-        return {
-          error: false,
-          message:
-            e instanceof Error
-              ? e.message
-              : 'There was an error creating your comment',
-        }
-      }
+      const episode = await ctx.prisma.episode.findUnique({
+        where: { showId_slug: { showId: show.id, slug: input.episodeSlug } },
+      })
+      if (!episode) throw 'Episode not found'
+
+      const comment = await ctx.prisma.comment.create({
+        data: {
+          userId: ctx.session.user.id,
+          episodeId: episode.id,
+          text: input.text,
+          replyToId: input.replyToId,
+        },
+      })
+      return comment
     }),
   addLike: protectedProcedure
     .input(z.object({ commentId: z.string(), add: z.boolean() }))
@@ -80,8 +73,13 @@ export const interactionRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const show = await ctx.prisma.show.findUnique({
+        where: { slug: input.showSlug },
+      })
+      if (!show) throw 'Show not found'
+
       const episode = await ctx.prisma.episode.findUnique({
-        where: { slug: input.episodeSlug },
+        where: { showId_slug: { showId: show.id, slug: input.episodeSlug } },
       })
       if (!episode) throw 'Episode not found'
 

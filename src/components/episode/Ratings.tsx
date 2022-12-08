@@ -50,15 +50,17 @@ export default function Ratings({ ratings: inRatings }: props) {
     <table className="w-fit">
       <thead>
         {['', 'Bad', 'Worse', 'Avg', 'Better', 'Great'].map((label) => (
-          <th className="px-1 text-xs sm:text-sm">{label}</th>
+          <th key={'heading' + label} className="px-1 text-xs sm:text-sm">
+            {label}
+          </th>
         ))}
       </thead>
       <tbody>
         {ratings.map(({ type: label, rating }) => (
-          <tr>
+          <tr key={'row:' + label}>
             <td className="text-sm font-extrabold sm:text-base">{label}</td>
             {[...Array(5)].map((_, i) => (
-              <td className="text-center">
+              <td key={'rating:' + label + i} className="text-center">
                 <button
                   className={`appearance-none py-1 px-3 text-2xl duration-75 ${ratingsColours[i]}`}
                   key={label + i}

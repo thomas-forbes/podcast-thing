@@ -48,11 +48,9 @@ export default function AddPodcast() {
       <p>
         {addEpisode.isLoading
           ? 'Loading...'
-          : addEpisode.data?.error
-          ? addEpisode.data.message
-          : addEpisode.data?.error == false
-          ? 'Success!'
-          : null}
+          : addEpisode.isError
+          ? 'Error'
+          : 'Success!'}
       </p>
     </Background>
   )

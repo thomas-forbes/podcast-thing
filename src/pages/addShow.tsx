@@ -37,9 +37,9 @@ export default function AddPodcast() {
           Add
         </button>
       </div>
-      {addShow.data && 'error' in addShow.data ? (
-        <p>{addShow.data.error}</p>
-      ) : addShow.data && 'title' in addShow.data ? (
+      {addShow.isError ? (
+        <p>{addShow.error.message}</p>
+      ) : addShow.data ? (
         <div className="flex flex-col space-y-2">
           <h2 className="text-2xl font-bold">We got this information</h2>
           <table>
