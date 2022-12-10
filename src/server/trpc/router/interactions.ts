@@ -6,7 +6,7 @@ export const interactionRouter = router({
     .input(
       z.object({
         episodeSlug: z.string(),
-        podcastSlug: z.string(),
+        showSlug: z.string(),
         text: z.string(),
         replyToId: z.string().optional(),
       })
@@ -15,7 +15,7 @@ export const interactionRouter = router({
       // TODO: implement podcastSlug and make episode slug not unique.
       // make unique pair episode slug and podcastId
       const show = await ctx.prisma.show.findUnique({
-        where: { slug: input.podcastSlug },
+        where: { slug: input.showSlug },
       })
       if (!show) throw 'Show not found'
 

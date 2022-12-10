@@ -62,11 +62,12 @@ export default function CommentInput({
       {/* {recURL && <audio src={recURL} controls />} */}
       {/* RECORD / STOP */}
       <button
+        disabled={true}
         onClick={() => (isRecording ? stopRecording() : startRecording())}
-        className={`flex w-full appearance-none flex-row items-center justify-center space-x-1 rounded-t-md py-2 px-3 text-zinc-100 outline-offset-2 transition duration-200 active:text-zinc-100/80 active:transition-none dark:active:text-zinc-100/70 ${
+        className={`flex w-full appearance-none flex-row items-center justify-center space-x-1 rounded-t-md py-2 px-3 text-zinc-100 outline-offset-2 transition duration-200 active:transition-none enabled:active:text-zinc-100/80 disabled:opacity-60 dark:enabled:active:text-zinc-100/70 ${
           isRecording
-            ? 'bg-red-500 hover:bg-red-400 active:bg-red-500 dark:bg-red-700 dark:hover:bg-red-600 dark:active:bg-red-700'
-            : 'bg-green-600 hover:bg-green-500 active:bg-green-600 dark:bg-green-700 dark:hover:bg-green-600 dark:active:bg-green-700'
+            ? 'bg-red-500 enabled:hover:bg-red-400 enabled:active:bg-red-500 dark:bg-red-700 dark:enabled:hover:bg-red-600 dark:enabled:active:bg-red-700'
+            : 'bg-green-600 enabled:hover:bg-green-500 enabled:active:bg-green-600 dark:bg-green-700 dark:enabled:hover:bg-green-600 dark:enabled:active:bg-green-700'
         }`}
       >
         <div className="text-lg">
@@ -99,7 +100,7 @@ export default function CommentInput({
                 setIsLoading(true)
                 await addComment.mutateAsync({
                   episodeSlug: (router.query.episodeSlug as string) ?? '',
-                  podcastSlug: (router.query.podcastSlug as string) ?? '',
+                  showSlug: (router.query.showSlug as string) ?? '',
                   text: commentText,
                   ...(reply && { replyToId }),
                 })
