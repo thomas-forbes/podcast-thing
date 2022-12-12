@@ -29,11 +29,14 @@ model Show {
   link        String?   @db.VarChar(255)
   feedUrl     String    @db.VarChar(255)
   imageUrl    String    @db.VarChar(255)
+  ownerId     String
+  owner       User      @relation(fields: [ownerId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   episodes    Episode[]
 
   @@index([slug])
+  @@index([ownerId])
 }
 
 model Episode {
@@ -124,6 +127,7 @@ model User {
   comments      Comment[]
   likes         Like[]
   ratings       Rating[]
+  shows         Show[]
 }
 
 model Account {

@@ -1,6 +1,8 @@
+import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import { useState } from 'react'
 import Background from '../components/Background'
 import Question from '../components/Question'
+import { getServerAuthSession } from '../server/common/get-server-auth-session'
 import { trpc } from '../utils/trpc'
 
 export default function AddPodcast() {
@@ -23,16 +25,16 @@ export default function AddPodcast() {
           placeholder={'https://example.com/rss'}
         />
         {/* SLUG */}
-        <Question
+        {/* <Question
           label="Slug name for podcast"
           value={slug}
           setValue={setSlug}
           placeholder="example-podcast"
-        />
+        /> */}
         {/* ADD */}
         <button
           className="rounded-md bg-sky-500 py-2 px-4 text-lg font-semibold text-sky-100 outline-offset-2 transition hover:bg-sky-400 active:bg-sky-500 active:text-sky-100/80 active:transition-none dark:bg-sky-600 dark:hover:bg-sky-500 dark:active:bg-sky-600 dark:active:text-sky-100/70"
-          onClick={() => addShow.mutate({ rssLink, slug })}
+          onClick={() => addShow.mutate({ rssLink })}
         >
           Add
         </button>
@@ -73,4 +75,20 @@ export default function AddPodcast() {
       ) : null}
     </Background>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext
+) => {
+  const session = await getServerAuthSession(ctx)
+  if (!session?.user) {
+    return {
+      redirect: {
+        destination:
+          '/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2FaddShow',
+        permanent: false,
+      },
+    }
+  }
+  return { props: {} }
 }

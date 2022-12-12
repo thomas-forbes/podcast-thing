@@ -1,6 +1,7 @@
 import Parser from 'rss-parser'
 import { z } from 'zod'
-import { publicProcedure, router } from '../trpc'
+import { Slugify } from '../../../utils/funcs'
+import { protectedProcedure, publicProcedure, router } from '../trpc'
 
 export const podcastRouter = router({
   getEpisode: publicProcedure
@@ -92,8 +93,8 @@ export const podcastRouter = router({
     const shows = await ctx.prisma.show.findMany()
     return shows
   }),
-  addShow: publicProcedure
-    .input(z.object({ rssLink: z.string(), slug: z.string() }))
+  addShow: protectedProcedure
+    .input(z.object({ rssLink: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const parser = new Parser()
       const feed = await parser.parseURL(input.rssLink)
@@ -107,14 +108,16 @@ export const podcastRouter = router({
           link: z.string(),
           feedUrl: z.string(),
           imageUrl: z.string(),
+          ownerId: z.string(),
         })
         .parse({
-          slug: input.slug,
+          slug: Slugify(feed?.title ?? ''),
           title: feed?.title,
           description: feed?.description,
           link: feed?.link,
           feedUrl: feed?.feedUrl,
           imageUrl: feed?.image?.url,
+          ownerId: ctx.session.user.id,
         })
 
       await ctx.prisma.show.create({
@@ -122,7 +125,7 @@ export const podcastRouter = router({
       })
       return show
     }),
-  addEpisode: publicProcedure
+  addEpisode: protectedProcedure
     .input(
       z.object({
         showId: z.string(),
@@ -131,11 +134,13 @@ export const podcastRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const slug = input.title
-        .toLowerCase()
-        .replace(/ /g, '-')
-        .replace(/[^\w-]+/g, '')
+      const show = await ctx.prisma.show.findUnique({
+        where: { id: input.showId },
+      })
+      if (!show) throw new Error('Show not found')
+      if (show.ownerId !== ctx.session.user.id) throw new Error('Unauthorised')
 
+      const slug = Slugify(input.title)
       // TODO: make sure showId is valid
       const episode = await ctx.prisma.episode.create({
         data: { ...input, slug },
