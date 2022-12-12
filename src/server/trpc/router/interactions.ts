@@ -118,11 +118,20 @@ export const interactionRouter = router({
     .mutation(async ({ ctx, input }) => {
       const comment = await ctx.prisma.comment.findUnique({
         where: { id: input.commentId },
+        include: { replies: true },
       })
       if (!comment) throw 'Comment not found'
       if (comment.userId !== ctx.session.user.id) throw 'Unauthorized'
-      return await ctx.prisma.comment.delete({
-        where: { id: input.commentId },
-      })
+
+      if (comment.replies.length) {
+        return await ctx.prisma.comment.update({
+          where: { id: input.commentId },
+          data: { deleted: true },
+        })
+      } else {
+        return await ctx.prisma.comment.delete({
+          where: { id: input.commentId },
+        })
+      }
     }),
 })

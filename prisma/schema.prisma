@@ -59,6 +59,7 @@ model Comment {
   id        String    @id @default(cuid())
   text      String    @db.Text
   likesNum  Int       @default(0)
+  deleted   Boolean   @default(false)
   userId    String
   user      User      @relation(fields: [userId], references: [id])
   episodeId String

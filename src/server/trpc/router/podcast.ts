@@ -56,6 +56,16 @@ export const podcastRouter = router({
           .filter((c) => !c.replyToId)
           .map((c) => ({
             ...c,
+            ...(c.deleted && {
+              text: '[deleted]',
+              userId: '',
+              user: {
+                ...c.user,
+                id: 'deleted',
+                name: '[deleted]',
+                image: null,
+              },
+            }),
             isLiked: likes?.some((l) => l.commentId === c.id) ?? false,
             replies: c.replies.map((r) => ({
               ...r,

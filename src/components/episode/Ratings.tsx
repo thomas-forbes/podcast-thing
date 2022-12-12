@@ -49,11 +49,13 @@ export default function Ratings({ ratings: inRatings }: props) {
   return (
     <table className="w-fit">
       <thead>
-        {['', 'Bad', 'Worse', 'Avg', 'Better', 'Great'].map((label) => (
-          <th key={'heading' + label} className="px-1 text-xs sm:text-sm">
-            {label}
-          </th>
-        ))}
+        <tr>
+          {['', 'Bad', 'Worse', 'Avg', 'Better', 'Great'].map((label) => (
+            <th key={'heading' + label} className="px-1 text-xs sm:text-sm">
+              {label}
+            </th>
+          ))}
+        </tr>
       </thead>
       <tbody>
         {ratings.map(({ type: label, rating }) => (
