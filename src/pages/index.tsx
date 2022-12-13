@@ -39,6 +39,14 @@ export default function Home() {
             </Link>
           ))}
       </div>
+      <div className="flex flex-row items-center space-x-4">
+        <Link href={'/addShow'} className="text-slate-200 underline">
+          Create Show
+        </Link>
+        <Link href={'/addEpisode'} className="text-slate-200 underline">
+          Create Episode
+        </Link>
+      </div>
     </Background>
   )
 }

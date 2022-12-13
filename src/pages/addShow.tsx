@@ -1,4 +1,5 @@
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
+import Link from 'next/link'
 import { useState } from 'react'
 import Background from '../components/Background'
 import Question from '../components/Question'
@@ -32,7 +33,8 @@ export default function AddPodcast() {
         /> */}
         {/* ADD */}
         <button
-          className="rounded-md bg-sky-500 py-2 px-4 text-lg font-semibold text-sky-100 outline-offset-2 transition hover:bg-sky-400 active:bg-sky-500 active:text-sky-100/80 active:transition-none dark:bg-sky-600 dark:hover:bg-sky-500 dark:active:bg-sky-600 dark:active:text-sky-100/70"
+          className="rounded-md bg-sky-500 py-2 px-4 text-lg font-semibold text-sky-100 outline-offset-2 transition active:transition-none enabled:hover:bg-sky-400 enabled:active:bg-sky-500 enabled:active:text-sky-100/80 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-sky-600 enabled:dark:hover:bg-sky-500 enabled:dark:active:bg-sky-600 enabled:dark:active:text-sky-100/70"
+          disabled={addShow.isLoading || !rssLink}
           onClick={() => addShow.mutate({ rssLink })}
         >
           Add
@@ -72,6 +74,11 @@ export default function AddPodcast() {
           </table>
         </div>
       ) : null}
+      {addShow.isSuccess && (
+        <Link href="/addEpisode" className="underline dark:text-slate-200">
+          Add Episode
+        </Link>
+      )}
     </Background>
   )
 }
