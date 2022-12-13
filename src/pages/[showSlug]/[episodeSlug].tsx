@@ -1,3 +1,4 @@
+import { NextSeo } from 'next-seo'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React from 'react'
@@ -48,6 +49,7 @@ export default function Episode() {
   if (!router.isReady || isLoading || episode == undefined) return <Loading />
   return (
     <>
+      <NextSeo title={episode.title} description={episode.description ?? ''} />
       <DataContext.Provider value={{ refetch, isLoading, isRefetching }}>
         <Background mainColumn>
           {/* IMAGE */}
