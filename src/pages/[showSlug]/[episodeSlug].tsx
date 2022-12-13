@@ -38,6 +38,7 @@ export default function Episode() {
     {
       enabled: typeof showSlug == 'string' && typeof episodeSlug == 'string',
       retry: 1,
+      refetchInterval: 1000 * 30,
     }
   )
 

@@ -9,7 +9,6 @@ export default function AddPodcast() {
   const addShow = trpc.podcast.addShow.useMutation()
 
   const [rssLink, setRssLink] = useState('')
-  const [slug, setSlug] = useState('')
   return (
     <Background mainColumn className="max-w-4xl">
       <h1 className="text-center text-5xl font-bold">

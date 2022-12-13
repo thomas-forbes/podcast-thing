@@ -7,6 +7,15 @@ export const podcastRouter = router({
   getEpisode: publicProcedure
     .input(z.object({ showSlug: z.string(), episodeSlug: z.string() }))
     .query(async ({ ctx, input }) => {
+      // return {
+      //   id: 'clbm21m3o0001wuwmrdum8d89',
+      //   title: 'test',
+      //   description: 'this is a test',
+      //   imageUrl:
+      //     'https://images.transistor.fm/file/transistor/images/show/24367/full_1632384816-artwork.jpg',
+      //   comments: [],
+      //   ratings: [],
+      // }
       const show = await ctx.prisma.show.findUnique({
         where: { slug: input.showSlug },
       })
@@ -22,31 +31,30 @@ export const podcastRouter = router({
       })
       if (!episode) throw new Error('Episode not found')
 
-      // get the Ratings for the episode if the user
-      // is logged in
-      const ratings = ctx?.session?.user
-        ? await ctx.prisma.rating.findMany({
-            where: {
-              userId: ctx.session.user.id,
-              episodeId: episode.id,
-            },
-          })
-        : undefined
-
-      const likes = ctx?.session?.user
-        ? await ctx.prisma.like.findMany({
-            where: {
-              AND: [
-                {
-                  userId: ctx.session.user.id,
-                },
-                {
-                  episodeId: episode.id,
-                },
-              ],
-            },
-          })
-        : undefined
+      const [ratings, likes] = await Promise.all([
+        ctx?.session?.user
+          ? await ctx.prisma.rating.findMany({
+              where: {
+                userId: ctx.session.user.id,
+                episodeId: episode.id,
+              },
+            })
+          : undefined,
+        ctx?.session?.user
+          ? await ctx.prisma.like.findMany({
+              where: {
+                AND: [
+                  {
+                    userId: ctx.session.user.id,
+                  },
+                  {
+                    episodeId: episode.id,
+                  },
+                ],
+              },
+            })
+          : undefined,
+      ])
 
       return {
         id: episode.id,
