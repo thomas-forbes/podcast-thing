@@ -2,7 +2,7 @@
 import MicRecorder from 'mic-recorder-to-mp3'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import {
   FaMicrophone,
   FaPause,
@@ -12,12 +12,15 @@ import {
 } from 'react-icons/fa'
 import TextareaAutosize from 'react-textarea-autosize'
 import { useCookie } from 'react-use'
+import { DataContext } from '../../pages/[showSlug]/[episodeSlug]'
 import { trpc } from '../../utils/trpc'
+import Spinner from '../Spinner'
 
 interface props {
   reply?: boolean
   replyToId?: string
   episodeId: string
+  onFinish?: () => void
 }
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 })
@@ -25,6 +28,7 @@ export default function CommentInput({
   reply = false,
   replyToId,
   episodeId,
+  onFinish,
 }: props) {
   const router = useRouter()
   const addComment = trpc.interactions.addComment.useMutation()
@@ -36,6 +40,9 @@ export default function CommentInput({
   const [commentText, setCommentText] = useState<string>(commentCookie || '')
   const [isRecording, setIsRecording] = useState(false)
   const [recURL, setRecURL] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const { refetch } = useContext(DataContext)
 
   const startRecording = async () => {
     setIsRecording(true)
@@ -55,11 +62,12 @@ export default function CommentInput({
       {/* {recURL && <audio src={recURL} controls />} */}
       {/* RECORD / STOP */}
       <button
+        disabled={true}
         onClick={() => (isRecording ? stopRecording() : startRecording())}
-        className={`flex w-full appearance-none flex-row items-center justify-center space-x-1 rounded-t-md py-2 px-3 text-zinc-100 outline-offset-2 transition duration-200 active:text-zinc-100/80 active:transition-none dark:active:text-zinc-100/70 ${
+        className={`flex w-full appearance-none flex-row items-center justify-center space-x-1 rounded-t-md py-2 px-3 text-zinc-100 outline-offset-2 transition duration-200 active:transition-none enabled:active:text-zinc-100/80 disabled:opacity-60 dark:enabled:active:text-zinc-100/70 ${
           isRecording
-            ? 'bg-red-500 hover:bg-red-400 active:bg-red-500 dark:bg-red-700 dark:hover:bg-red-600 dark:active:bg-red-700'
-            : 'bg-green-600 hover:bg-green-500 active:bg-green-600 dark:bg-green-700 dark:hover:bg-green-600 dark:active:bg-green-700'
+            ? 'bg-red-500 enabled:hover:bg-red-400 enabled:active:bg-red-500 dark:bg-red-700 dark:enabled:hover:bg-red-600 dark:enabled:active:bg-red-700'
+            : 'bg-green-600 enabled:hover:bg-green-500 enabled:active:bg-green-600 dark:bg-green-700 dark:enabled:hover:bg-green-600 dark:enabled:active:bg-green-700'
         }`}
       >
         <div className="text-lg">
@@ -88,21 +96,27 @@ export default function CommentInput({
       <button
         onClick={
           session?.user
-            ? () => {
-                addComment.mutate({
+            ? async () => {
+                setIsLoading(true)
+                await addComment.mutateAsync({
                   episodeSlug: (router.query.episodeSlug as string) ?? '',
-                  podcastSlug: (router.query.podcastSlug as string) ?? '',
+                  showSlug: (router.query.showSlug as string) ?? '',
                   text: commentText,
                   ...(reply && { replyToId }),
                 })
+                await refetch()
+
+                setIsLoading(false)
+                setCommentText('')
                 deleteCookie()
+                onFinish && onFinish()
               }
             : () => signIn()
         }
-        disabled={commentText.length === 0}
-        className="-mt-1 w-full rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition enabled:hover:bg-zinc-400 enabled:active:bg-zinc-500 enabled:active:text-zinc-100/80 enabled:active:transition-none disabled:opacity-60 dark:bg-zinc-700 enabled:dark:hover:bg-zinc-600 enabled:dark:active:bg-zinc-700 enabled:dark:active:text-zinc-100/70"
+        disabled={commentText.length === 0 || isLoading}
+        className="-mt-1 flex w-full items-center justify-center rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition enabled:hover:bg-zinc-400 enabled:active:bg-zinc-500 enabled:active:text-zinc-100/80 enabled:active:transition-none disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-700 enabled:dark:hover:bg-zinc-600 enabled:dark:active:bg-zinc-700 enabled:dark:active:text-zinc-100/70"
       >
-        {reply ? 'Reply' : 'Comment'}
+        {isLoading ? <Spinner /> : reply ? 'Reply' : 'Comment'}
       </button>
     </div>
   )

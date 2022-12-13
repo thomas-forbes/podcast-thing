@@ -23,7 +23,11 @@ export default defineNextConfig({
    * @see https://github.com/juliusmarminge/t3-i18n
    **/
   images: {
-    domains: ['lh3.googleusercontent.com'],
+    domains: [
+      'lh3.googleusercontent.com',
+      'images.transistor.fm',
+      'megaphone.imgix.net',
+    ],
   },
 
   i18n: {

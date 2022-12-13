@@ -8,11 +8,15 @@ interface props {
     user: User
     replies: (Comment & {
       user: User
+      isLiked: boolean
     })[]
+    isLiked: boolean
   }
+
+  episodeId: string
 }
 
-export default function WholeComment({ comment }: props) {
+export default function WholeComment({ comment, episodeId }: props) {
   const [showInput, setShowInput] = useState(false)
   return (
     <div
@@ -23,17 +27,26 @@ export default function WholeComment({ comment }: props) {
       <div className="space-y-2">
         <CommentBox
           comment={comment}
-          onReply={() => setShowInput(!showInput)}
+          setShowInput={setShowInput}
           isReplying={showInput}
         />
-        {showInput && <CommentInput reply replyToId={comment.id} />}
+        {showInput && (
+          <CommentInput
+            episodeId={episodeId}
+            reply
+            replyToId={comment.id}
+            onFinish={() => setShowInput(false)}
+          />
+        )}
       </div>
       {/* REPLIES */}
-      <div className="ml-2 flex flex-col space-y-4 border-l-2 pl-3 dark:border-zinc-700">
-        {comment.replies.map((reply) => (
-          <Reply key={'reply:' + reply.id} comment={reply} />
-        ))}
-      </div>
+      {comment.replies.length ? (
+        <div className="ml-2 flex flex-col space-y-4 border-l-2 pl-3 dark:border-zinc-700">
+          {comment.replies.map((reply) => (
+            <Reply key={'reply:' + reply.id} comment={reply} />
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -43,6 +56,7 @@ const Reply = ({
 }: {
   comment: Comment & {
     user: User
+    isLiked: boolean
   }
 }) => {
   // const [showInput, setShowInput] = useState(false)
@@ -50,7 +64,6 @@ const Reply = ({
     <div className="space-y-2">
       <CommentBox
         comment={comment}
-        // onReply={() => setShowInput(!showInput)}
         // isReplying={showInput}
         isReply
       />
