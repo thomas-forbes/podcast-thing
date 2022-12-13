@@ -93,6 +93,12 @@ export const podcastRouter = router({
     const shows = await ctx.prisma.show.findMany()
     return shows
   }),
+  getOwnedShows: protectedProcedure.query(async ({ ctx }) => {
+    const shows = await ctx.prisma.show.findMany({
+      where: { ownerId: ctx.session.user.id },
+    })
+    return shows
+  }),
   addShow: protectedProcedure
     .input(z.object({ rssLink: z.string() }))
     .mutation(async ({ ctx, input }) => {

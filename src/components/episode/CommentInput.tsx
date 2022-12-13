@@ -114,7 +114,7 @@ export default function CommentInput({
             : () => signIn()
         }
         disabled={commentText.length === 0 || isLoading}
-        className="-mt-1 flex w-full items-center justify-center rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition enabled:hover:bg-zinc-400 enabled:active:bg-zinc-500 enabled:active:text-zinc-100/80 enabled:active:transition-none disabled:opacity-60 dark:bg-zinc-700 enabled:dark:hover:bg-zinc-600 enabled:dark:active:bg-zinc-700 enabled:dark:active:text-zinc-100/70"
+        className="-mt-1 flex w-full items-center justify-center rounded-b-md bg-zinc-500 py-2 px-3 text-sm font-semibold text-zinc-100 outline-offset-2 transition enabled:hover:bg-zinc-400 enabled:active:bg-zinc-500 enabled:active:text-zinc-100/80 enabled:active:transition-none disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-700 enabled:dark:hover:bg-zinc-600 enabled:dark:active:bg-zinc-700 enabled:dark:active:text-zinc-100/70"
       >
         {isLoading ? <Spinner /> : reply ? 'Reply' : 'Comment'}
       </button>

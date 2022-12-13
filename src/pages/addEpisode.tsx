@@ -1,6 +1,8 @@
 import { Combobox } from '@headlessui/react'
 import { Show } from '@prisma/client'
+import Fuse from 'fuse.js'
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
+import Link from 'next/link'
 import { Dispatch, SetStateAction, useState } from 'react'
 import Background from '../components/Background'
 import Loading from '../components/Loading'
@@ -9,7 +11,7 @@ import { getServerAuthSession } from '../server/common/get-server-auth-session'
 import { trpc } from '../utils/trpc'
 
 export default function AddPodcast() {
-  const { data: shows } = trpc.podcast.getShows.useQuery()
+  const { data: shows } = trpc.podcast.getOwnedShows.useQuery()
   const addEpisode = trpc.podcast.addEpisode.useMutation()
 
   const [title, setTitle] = useState('')
@@ -43,14 +45,13 @@ export default function AddPodcast() {
         />
         {/* ADD */}
         <button
-        // TODO: disabled shit
-          className="rounded-md bg-sky-500 py-2 px-4 text-lg font-semibold text-sky-100 outline-offset-2 transition hover:bg-sky-400 active:bg-sky-500 active:text-sky-100/80 active:transition-none dark:bg-sky-600 dark:hover:bg-sky-500 dark:active:bg-sky-600 dark:active:text-sky-100/70"
-          disabled={addEpisode.isLoading || selPod == undefined}
+          className="rounded-md bg-sky-500 py-2 px-4 text-lg font-semibold text-sky-100 outline-offset-2 transition active:transition-none enabled:hover:bg-sky-400 enabled:active:bg-sky-500 enabled:active:text-sky-100/80 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-sky-600 enabled:dark:hover:bg-sky-500 enabled:dark:active:bg-sky-600 enabled:dark:active:text-sky-100/70"
+          disabled={addEpisode.isLoading || selPod == undefined || !title}
           onClick={() =>
             addEpisode.mutate({
               title,
               description,
-              showId: selPod?.id ?? ''
+              showId: selPod?.id ?? '',
             })
           }
         >
@@ -58,37 +59,60 @@ export default function AddPodcast() {
         </button>
       </div>
       {/* SERVER RESPONSE */}
-      <p>
-        {addEpisode.isLoading
-          ? 'Loading...'
-          : addEpisode.isError
-            ? 'Error'
-            : 'Success!'}
-      </p>
+      <div className="flex flex-col items-center space-y-1">
+        <p>
+          {addEpisode.isLoading
+            ? 'Loading...'
+            : addEpisode.isError
+            ? addEpisode.error.message || 'Error'
+            : addEpisode.data
+            ? 'Success!'
+            : ''}
+        </p>
+        {addEpisode.data && (
+          <Link
+            href={`/${selPod?.slug}/${addEpisode.data.slug}`}
+            className="underline dark:text-slate-400"
+          >
+            Go to pod
+          </Link>
+        )}
+      </div>
     </Background>
   )
 }
 
-const SearchPods = ({ selPod, setSelPod, shows }: { selPod: Show| undefined, setSelPod: Dispatch<SetStateAction<Show | undefined>>, shows: Show[] }) => {
+const SearchPods = ({
+  selPod,
+  setSelPod,
+  shows,
+}: {
+  selPod: Show | undefined
+  setSelPod: Dispatch<SetStateAction<Show | undefined>>
+  shows: Show[]
+}) => {
   const [query, setQuery] = useState('')
-
-  // TODO: use fuse
-  const filteredPeople =
-    query === ''
-      ? shows
-      : shows.filter((show) => {
-        return show.title.toLowerCase().includes(query.toLowerCase())
-      })
-
-
+  const fuse = new Fuse(shows, {
+    keys: ['title'],
+  })
   return (
     <Combobox value={selPod} onChange={setSelPod}>
-      <Combobox.Input className='w-full rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors duration-300 focus:border-sky-600 focus:outline-none focus:ring-4 focus:ring-sky-600/10 dark:border-zinc-600 dark:bg-zinc-700/[0.15] dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-500' onChange={(event) => setQuery(event.target.value)} displayValue={(show: Show) => show?.title}
-      placeholder='Podcast...'
- />
-      <Combobox.Options className='w-full rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors duration-300 focus:outline-none dark:border-zinc-600 dark:bg-zinc-700/[0.15] dark:text-zinc-200'>
-        {filteredPeople.map((show) => (
-          <Combobox.Option key={show.id} value={show} className='cursor-pointer p-1'>
+      <Combobox.Input
+        className="w-full rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors duration-300 placeholder:text-zinc-400 focus:border-sky-600 focus:outline-none focus:ring-4 focus:ring-sky-600/10 dark:border-zinc-600 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500"
+        onChange={(event) => setQuery(event.target.value)}
+        displayValue={(show: Show) => show?.title}
+        placeholder="Podcast..."
+      />
+      <Combobox.Options className="w-full rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 transition-colors duration-300 focus:outline-none dark:border-zinc-600 dark:bg-zinc-700/[0.15] dark:text-zinc-200">
+        {(query.trim()
+          ? fuse.search(query).map(({ item }) => item)
+          : shows
+        ).map((show) => (
+          <Combobox.Option
+            key={show.id}
+            value={show}
+            className="cursor-pointer p-1"
+          >
             {show.title}
           </Combobox.Option>
         ))}

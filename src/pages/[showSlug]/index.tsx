@@ -39,7 +39,7 @@ export default function Show() {
       </div>
       {/* EPISODES */}
       <h2 className="text-xl font-bold">Episodes:</h2>
-      <div className="flex flex-col items-stretch">
+      <div className="flex w-full flex-col items-stretch">
         {show.episodes
           .sort(
             (a, b) =>
