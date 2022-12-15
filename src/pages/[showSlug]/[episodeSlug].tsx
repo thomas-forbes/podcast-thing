@@ -1,5 +1,6 @@
 import { NextSeo } from 'next-seo'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { MdIosShare } from 'react-icons/md'
@@ -54,13 +55,15 @@ export default function Episode() {
       <DataContext.Provider value={{ refetch, isLoading, isRefetching }}>
         <Background mainColumn>
           {/* IMAGE */}
-          <Image
-            src={episode.imageUrl}
-            alt="Podcast Image"
-            width={128}
-            height={128}
-            className="overflow-hidden rounded-md shadow-xl shadow-slate-800"
-          />
+          <Link href={`/${showSlug}`} className="cursor-pointer">
+            <Image
+              src={episode.imageUrl}
+              alt="Podcast Image"
+              width={128}
+              height={128}
+              className="overflow-hidden rounded-md shadow-xl shadow-slate-800"
+            />
+          </Link>
           {/* TEXT */}
           <div className="flex w-full flex-col items-center space-y-4">
             <h1 className="text-center text-2xl font-extrabold">
