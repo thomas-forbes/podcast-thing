@@ -62,7 +62,7 @@ export default function CommentInput({
       {/* {recURL && <audio src={recURL} controls />} */}
       {/* RECORD / STOP */}
       <button
-        disabled={true}
+        // disabled={true}
         onClick={() => (isRecording ? stopRecording() : startRecording())}
         className={`flex w-full appearance-none flex-row items-center justify-center space-x-1 rounded-t-md py-2 px-3 text-zinc-100 outline-offset-2 transition duration-200 active:transition-none enabled:active:text-zinc-100/80 disabled:opacity-60 dark:enabled:active:text-zinc-100/70 ${
           isRecording
@@ -166,6 +166,7 @@ const VoiceWave = ({ src, trash }: { src: string; trash: () => void }) => {
 
   return (
     <div className="flex w-full appearance-none flex-row items-center space-x-4 border-x border-zinc-900/10 bg-white p-3 shadow-md shadow-zinc-800/5 transition-colors placeholder:text-zinc-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500">
+      <p>(uploading not implemented yet)</p>
       <button
         className="p-1 dark:text-zinc-200 dark:hover:text-zinc-300 dark:active:text-zinc-200"
         onClick={() => wavesurfer?.playPause()}
