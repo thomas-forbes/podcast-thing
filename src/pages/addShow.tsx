@@ -1,9 +1,9 @@
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import { NextSeo } from 'next-seo'
-import Link from 'next/link'
 import { useState } from 'react'
 import Background from '../components/Background'
 import Question from '../components/Question'
+import StyledLink from '../components/StyledLink'
 import { getServerAuthSession } from '../server/common/get-server-auth-session'
 import { trpc } from '../utils/trpc'
 
@@ -78,9 +78,7 @@ export default function AddPodcast() {
           </div>
         ) : null}
         {addShow.isSuccess && (
-          <Link href="/addEpisode" className="underline dark:text-slate-200">
-            Add Episode
-          </Link>
+          <StyledLink href="/addEpisode">Add Episode</StyledLink>
         )}
       </Background>
     </>

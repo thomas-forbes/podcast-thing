@@ -66,7 +66,7 @@ export default function Episode() {
               {episode.title}
             </h1>
             {/* make into 2 lines with expandability */}
-            <p className="text-center dark:text-slate-200">
+            <p className="text-center text-slate-700 dark:text-slate-200">
               {episode.description}
             </p>
           </div>

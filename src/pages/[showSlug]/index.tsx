@@ -38,7 +38,9 @@ export default function Show() {
         <div className="flex w-full flex-col items-center space-y-4">
           <h1 className="text-center text-4xl font-extrabold">{show.title}</h1>
           {/* TODO: make into 2 lines with expandability */}
-          <p className="text-center dark:text-slate-200">{show.description}</p>
+          <p className="text-center text-slate-700 dark:text-slate-200">
+            {show.description}
+          </p>
         </div>
         {/* EPISODES */}
         <h2 className="text-xl font-bold">Episodes:</h2>
@@ -66,7 +68,7 @@ export default function Show() {
                   <h3 className="text-lg font-bold leading-6">
                     {episode.title}
                   </h3>
-                  <p className="text-sm leading-6 dark:text-slate-200">
+                  <p className="text-sm leading-6 text-slate-700 dark:text-slate-200">
                     {episode.description}
                   </p>
                 </div>

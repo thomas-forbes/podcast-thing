@@ -3,11 +3,11 @@ import { Show } from '@prisma/client'
 import Fuse from 'fuse.js'
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import { NextSeo } from 'next-seo'
-import Link from 'next/link'
 import { Dispatch, SetStateAction, useState } from 'react'
 import Background from '../components/Background'
 import Loading from '../components/Loading'
 import Question from '../components/Question'
+import StyledLink from '../components/StyledLink'
 import { getServerAuthSession } from '../server/common/get-server-auth-session'
 import { trpc } from '../utils/trpc'
 
@@ -73,12 +73,9 @@ export default function AddPodcast() {
               : ''}
           </p>
           {addEpisode.data && (
-            <Link
-              href={`/${selPod?.slug}/${addEpisode.data.slug}`}
-              className="underline dark:text-slate-400"
-            >
+            <StyledLink href={`/${selPod?.slug}/${addEpisode.data.slug}`}>
               Go to pod
-            </Link>
+            </StyledLink>
           )}
         </div>
       </Background>

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Background from '../components/Background'
 import Loading from '../components/Loading'
+import StyledLink from '../components/StyledLink'
 import { trpc } from '../utils/trpc'
 
 export default function Home() {
@@ -36,7 +37,7 @@ export default function Home() {
                 />
                 <div className="flex flex-col space-y-2">
                   <h3 className="text-2xl font-bold leading-6">{show.title}</h3>
-                  <p className="text-xs dark:text-slate-200">
+                  <p className="text-xs text-slate-700 dark:text-slate-200">
                     {show.description}
                   </p>
                 </div>
@@ -44,12 +45,8 @@ export default function Home() {
             ))}
         </div>
         <div className="flex flex-row items-center space-x-4">
-          <Link href={'/addShow'} className="text-slate-200 underline">
-            Create Show
-          </Link>
-          <Link href={'/addEpisode'} className="text-slate-200 underline">
-            Create Episode
-          </Link>
+          <StyledLink href="/addShow">Create Show</StyledLink>
+          <StyledLink href="/addEpisode">Create Episode</StyledLink>
         </div>
       </Background>
     </>
