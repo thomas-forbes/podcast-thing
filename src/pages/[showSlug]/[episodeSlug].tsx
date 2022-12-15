@@ -2,6 +2,7 @@ import { NextSeo } from 'next-seo'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React from 'react'
+import { MdIosShare } from 'react-icons/md'
 import Background from '../../components/Background'
 import CommentInput from '../../components/episode/CommentInput'
 import Ratings from '../../components/episode/Ratings'
@@ -101,6 +102,21 @@ export default function Episode() {
                 ))}
             </div>
           </div>
+          {/* SHARE */}
+          <button
+            className="fixed bottom-4 right-4 flex flex-row items-center justify-center space-x-1 rounded-full bg-zinc-500 py-2 px-3 text-sm font-bold text-zinc-100 outline-offset-2 transition enabled:hover:bg-zinc-400 enabled:active:bg-zinc-500 enabled:active:text-zinc-100/80 enabled:active:transition-none disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-700 enabled:dark:hover:bg-zinc-600 enabled:dark:active:bg-zinc-700 enabled:dark:active:text-zinc-100/70"
+            onClick={
+              'share' in navigator
+                ? () =>
+                    navigator?.share({
+                      url: window.location.href,
+                    })
+                : () => navigator.clipboard.writeText(window.location.href)
+            }
+          >
+            <MdIosShare className="text-lg" />
+            <span>{'share' in navigator ? 'Share' : 'Copy Link'}</span>
+          </button>
         </Background>
       </DataContext.Provider>
     </>
